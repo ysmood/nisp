@@ -1,0 +1,26 @@
+{
+  "name": "misp",
+  "version": "0.0.1",
+  "description": "a non-Turing-complete lisp-0",
+  "main": "lib/misp.js",
+  "scripts": {
+    "no": "no",
+    "prepublish": "no build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ysmood/misp.git"
+  },
+  "keywords": [
+    "lisp"
+  ],
+  "author": "http://ysmood.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ysmood/misp/issues"
+  },
+  "homepage": "https://github.com/ysmood/misp#readme",
+  "devDependencies": {
+    "nokit": "^0.16.7"
+  }
+}
