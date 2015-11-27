@@ -3,65 +3,20 @@ function isArray (obj) {
 }
 
 function evalExp (exp, env) {
+    if (arguments.length < 2) throw new TypeError("env is required")
+
     if (!isArray(exp)) {
         return exp in env ? env[exp] : exp;
     }
 
     var action = exp[0];
 
-    // define variable
-    // ["$", "name", exp]
-    if (action === "$") {
-        return env[exp[1]] = evalExp(exp[2], env);
-    }
-
-    // lambda
-    // ["@", [...args], exp]
-    if (action === "@") {
-        return function () {
-            var len = arguments.length;
-            var closure = {};
-
-            for (var k in env) {
-                closure[k] = env[k];
-            }
-            for (var i = 0; i < len; i++) {
-                closure[exp[1][i]] = arguments[i];
-            }
-
-            return evalExp(exp[2], closure);
-        };
-    }
-
-    // condition
-    // ["?", expCond, expTrue, expFalse]
-    if (action === "?") {
-        return evalExp(exp[1], env) ?
-            evalExp(exp[2], env) :
-            evalExp(exp[3], env);
-    }
-
-    // plain data
-    // ["`", data]
-    if (action === "`") {
-        return exp[1];
-    }
-
-    if (typeof action === "function") {
-        return val.apply(0, args)
-    }
-
     // eval lambda
     // [envFn, ...args]
     if (action in env) {
         var len = exp.length;
-        var args = [];
-        for (var i = 1; i < len; i++) {
-            args.push(evalExp(exp[i], env));
-        }
-
         var val = env[action];
-        return typeof val === 'function' ? val.apply(0, args) : val;
+        return typeof val === 'function' ? val(exp.slice(1), env, evalExp) : val;
     }
 
     // nothing to do
