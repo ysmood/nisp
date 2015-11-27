@@ -71,13 +71,10 @@ function evalExp (exp, env) {
 module.exports = function misp (ast, env) {
     var ret, len = ast.length;
 
-    if (isArray(ast)) {
-        for (var i = 0; i < len; i++) {
-            var exp = ast[i];
-            ret = isArray(exp) ? evalExp(exp, env) : exp;
-        }
-    } else {
-        ret = ast;
+    if (arguments.length === 1) env = {};
+
+    for (var i = 0; i < len; i++) {
+        ret = evalExp(ast[i], env);
     }
 
     return ret;
