@@ -2,21 +2,21 @@ var nisp = require("../src");
 
 module.exports = function (it) {
     function add (args, env, eval) {
-        return eval(args[0], env) + eval(args[1], env);
+        return eval(args[1], env) + eval(args[2], env);
     }
 
     function def (args, env, eval) {
-        return env[eval(args[0], env)] = eval(args[1], env);
+        return env[eval(args[1], env)] = eval(args[2], env);
     }
 
     function ifExp (args, env, eval) {
-        return eval(args[0], env) ?
-            eval(args[1], env) :
-            eval(args[2], env);
+        return eval(args[1], env) ?
+            eval(args[2], env) :
+            eval(args[3], env);
     }
 
     function plain (args) {
-        return args[0];
+        return args[1];
     }
 
     it.describe("basic", function (it) {
