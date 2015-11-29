@@ -3,7 +3,8 @@ var nisp = require("../src");
 var stdFns = {
     def: require("../src/def"),
     if: require("../src/if"),
-    plain: require("../src/plain")
+    plain: require("../src/plain"),
+    fn: require("../src/fn")
 }
 
 module.exports = function (it) {
@@ -56,30 +57,19 @@ module.exports = function (it) {
             return it.eq(nisp(ast, env), 1);
         });
 
-        // it("@", function () {
-        //     var env = { inc: function (a) { return ++a; } };
+        it("custom fn", function () {
+            var env = {
+                "+": add,
+                def: stdFns.def,
+                fn: stdFns.fn
+            };
 
-        //     var ast = [
-        //         ["$", "foo",
-        //             ["@", ["v"], ["inc", "v"]]
-        //         ],
-        //         ["foo", 1]
-        //     ]
+            var ast = [
+                ["def", "foo", ["fn", ["a", "b"], ["+", "a", "b"]]],
+                ["foo", 1, ["+", 1, 1]]
+            ]
 
-        //     return it.eq(nisp(ast, env), 2);
-        // });
-
-        // it("?", function () {
-        //     var env = { list: function () { return [].slice.call(arguments); } };
-
-        //     var ast = [
-        //         ["list",
-        //             ["?", true, 1, 2],
-        //             ["?", false, 1, 2]
-        //         ]
-        //     ]
-
-        //     return it.eq(nisp(ast, env), [1, 2]);
-        // });
+            return it.eq(nisp(ast, env), 3);
+        });
     });
 };
