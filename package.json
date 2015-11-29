@@ -1,15 +1,15 @@
 {
-  "name": "misp",
+  "name": "nisp",
   "version": "0.0.1",
   "description": "a non-Turing-complete lisp-0",
-  "main": "lib/misp.js",
+  "main": "lib",
   "scripts": {
     "no": "no",
     "prepublish": "no build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ysmood/misp.git"
+    "url": "git+https://github.com/ysmood/nisp.git"
   },
   "keywords": [
     "lisp"
@@ -17,9 +17,9 @@
   "author": "http://ysmood.org",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ysmood/misp/issues"
+    "url": "https://github.com/ysmood/nisp/issues"
   },
-  "homepage": "https://github.com/ysmood/misp#readme",
+  "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
     "junit": "1.0.0",
     "nokit": "^0.16.7"

@@ -1,4 +1,4 @@
-var misp = require("../src/misp");
+var nisp = require("../src");
 
 module.exports = function (it) {
     function add (args, env, eval) {
@@ -21,19 +21,19 @@ module.exports = function (it) {
 
     it.describe("basic", function (it) {
         it("number", function () {
-            return it.eq(misp([1]), 1);
+            return it.eq(nisp([1]), 1);
         });
 
         it("string", function () {
-            return it.eq(misp(["ok"]), "ok");
+            return it.eq(nisp(["ok"]), "ok");
         });
 
         it("object", function () {
-            return it.eq(misp([{ a: "ok" }]), { a: "ok" });
+            return it.eq(nisp([{ a: "ok" }]), { a: "ok" });
         });
 
         it("plain", function () {
-            return it.eq(misp([["`", [1, "ok"]]], {
+            return it.eq(nisp([["`", [1, "ok"]]], {
                 '`': plain
             }), [1, "ok"]);
         });
@@ -48,7 +48,7 @@ module.exports = function (it) {
                 ["def", "a", ["+", 1, 1]]
             ]
 
-            return it.eq(misp(ast, env), 2);
+            return it.eq(nisp(ast, env), 2);
         });
 
         it("custom if", function () {
@@ -61,7 +61,7 @@ module.exports = function (it) {
                 ["if", ["+", 0, ["+", 1, 0]], 1, 2]
             ]
 
-            return it.eq(misp(ast, env), 1);
+            return it.eq(nisp(ast, env), 1);
         });
 
         // it("@", function () {
@@ -74,7 +74,7 @@ module.exports = function (it) {
         //         ["foo", 1]
         //     ]
 
-        //     return it.eq(misp(ast, env), 2);
+        //     return it.eq(nisp(ast, env), 2);
         // });
 
         // it("?", function () {
@@ -87,7 +87,7 @@ module.exports = function (it) {
         //         ]
         //     ]
 
-        //     return it.eq(misp(ast, env), [1, 2]);
+        //     return it.eq(nisp(ast, env), [1, 2]);
         // });
     });
 };

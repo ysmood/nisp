@@ -23,7 +23,7 @@ function evalExp (exp, env) {
     return evalExp(action, env);
 }
 
-module.exports = function misp (ast, env) {
+module.exports = function (ast, env) {
     var ret, len = ast.length;
 
     if (arguments.length === 1) env = {};
