@@ -2,7 +2,17 @@ function isArray (obj) {
     return typeof obj === "object" && typeof obj.length === "number";
 }
 
-function evalExp (exp, env) {
+function isFunction (obj) {
+    return typeof obj === "function";
+}
+
+/**
+ * Eval a expression with specific env.
+ * @param  {Array} exp Expression.
+ * @param  {Object} env key/value object.
+ * @return {Any} The computed value.
+ */
+function eval (exp, env) {
     if (arguments.length < 2) throw new TypeError("env is required")
 
     if (!isArray(exp)) {
@@ -11,16 +21,15 @@ function evalExp (exp, env) {
 
     var action = exp[0];
 
-    // eval lambda
+    // eval fn
     // [envFn, ...args]
     if (action in env) {
         var len = exp.length;
         var val = env[action];
-        return typeof val === 'function' ? val(exp.slice(1), env, evalExp) : val;
+        return isFunction(val) ? val(exp.slice(1), env, eval) : val;
+    } else {
+        return eval(action, env);
     }
-
-    // nothing to do
-    return evalExp(action, env);
 }
 
 module.exports = function (ast, env) {
@@ -28,8 +37,9 @@ module.exports = function (ast, env) {
 
     if (arguments.length === 1) env = {};
 
+    // The main loop
     for (var i = 0; i < len; i++) {
-        ret = evalExp(ast[i], env);
+        ret = eval(ast[i], env);
     }
 
     return ret;
