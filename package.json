@@ -7,6 +7,7 @@
     "no": "no",
     "prepublish": "no build"
   },
+  "files": ["lib"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ysmood/nisp.git"

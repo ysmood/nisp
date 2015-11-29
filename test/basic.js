@@ -1,22 +1,14 @@
 var nisp = require("../src");
 
+var stdFns = {
+    def: require("../src/def"),
+    if: require("../src/if"),
+    plain: require("../src/plain")
+}
+
 module.exports = function (it) {
     function add (args, env, eval) {
         return eval(args[1], env) + eval(args[2], env);
-    }
-
-    function def (args, env, eval) {
-        return env[eval(args[1], env)] = eval(args[2], env);
-    }
-
-    function ifExp (args, env, eval) {
-        return eval(args[1], env) ?
-            eval(args[2], env) :
-            eval(args[3], env);
-    }
-
-    function plain (args) {
-        return args[1];
     }
 
     it.describe("basic", function (it) {
@@ -34,14 +26,14 @@ module.exports = function (it) {
 
         it("plain", function () {
             return it.eq(nisp([["`", [1, "ok"]]], {
-                '`': plain
+                '`': stdFns.plain
             }), [1, "ok"]);
         });
 
         it("custom def", function () {
             var env = {
                 "+": add,
-                def: def
+                def: stdFns.def
             };
 
             var ast = [
@@ -54,7 +46,7 @@ module.exports = function (it) {
         it("custom if", function () {
             var env = {
                 "+": add,
-                if: ifExp
+                if: stdFns.if
             };
 
             var ast = [
