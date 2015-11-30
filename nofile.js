@@ -6,7 +6,7 @@ module.exports = function (task) {
     });
 
     task("lint", function () {
-        return kit.spawn("eslint", ["{src,test}/**/*.js"]);
+        return kit.spawn("eslint", ["{src,test}/**/*.js", "nofile.js"]);
     });
 
     task("clean", function () {

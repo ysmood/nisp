@@ -66,16 +66,18 @@ Here only the admin user can sum things.
 
 ```js
 var nisp = require("nisp");
+var toPlainFn = require("nisp/lib/toPlainFn");
 
 var env = {
-    "+": function (ast, env, eval) {
+    "+": toPlainFn(function (a, b) {
         if (!session.isAdmin) throw Error("permission not allowed");
-
-        return ast.slice(1).reduce(function (s, nameAst) {
-            return s += eval(nameAst, env);
-        }, 0);
-    }
+        return a + b;
+    })
 };
+
+var expresses = [
+    ["+", 1, 2]
+];
 
 var expresses = [
     ["+", 1, 2, 3]
@@ -83,3 +85,39 @@ var expresses = [
 
 nisp(expresses, env); // => 6 or Error
 ```
+
+### Full control the ast
+
+Here we implementation a `if` expression. The `if` expression is very special,
+it cannot be achieved without ast manipulation.
+
+```js
+var nisp = require("nisp");
+var toPlainFn = require("nisp/lib/toPlainFn");
+
+var env = {
+    "if": function (ast, env, eval) {
+        return eval(ast[1], env) ?
+            eval(ast[2], env) :
+            eval(ast[3], env);
+    },
+    // Most times you don't want to use it.
+    "non-lazy-if": toPlainFn(function (cond, a, b) {
+        return cond ? a : b;
+    })
+};
+
+var expresses = [
+    ["+", 1, 2]
+];
+
+var expresses = [
+    ["+", 1, 2, 3]
+];
+
+nisp(expresses, env); // => 6 or Error
+```
+
+# API
+
+Checkout the files in `src` folder.
