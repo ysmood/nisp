@@ -37,11 +37,11 @@ module.exports = function (it) {
         it("custom def", function () {
             var env = {
                 "+": add,
-                def: stdFns.def
+                $: stdFns.def
             };
 
             var ast = [
-                ["def", "a", ["+", 1, 1]],
+                ["$", "a", ["+", 1, 1]],
                 "a"
             ];
 
@@ -51,11 +51,11 @@ module.exports = function (it) {
         it("custom if", function () {
             var env = {
                 "+": add,
-                if: stdFns.if
+                "?": stdFns.if
             };
 
             var ast = [
-                ["if", ["+", 0, ["+", 1, 0]], 1, 2]
+                ["?", ["+", 0, ["+", 1, 0]], 1, 2]
             ];
 
             return it.eq(nisp(ast, env), 1);
@@ -64,14 +64,14 @@ module.exports = function (it) {
         it("custom fn", function () {
             var env = {
                 "+": add,
-                def: stdFns.def,
-                fn: stdFns.fn
+                $: stdFns.def,
+                "@": stdFns.fn
             };
 
             var ast = [
-                ["def", "foo",
-                    ["fn", ["a", "b"],
-                        ["def", "c", 1],
+                ["$", "foo",
+                    ["@", ["a", "b"],
+                        ["$", "c", 1],
                         ["+", "a", "b", "c"]
                     ]
                 ],
