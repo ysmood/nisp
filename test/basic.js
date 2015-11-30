@@ -1,4 +1,5 @@
 var nisp = require("../src");
+var toPlainFn = require("../src/toPlainFn");
 
 var stdFns = {
     def: require("../src/def"),
@@ -8,11 +9,11 @@ var stdFns = {
 };
 
 module.exports = function (it) {
-    function add (args, env, eval) {
-        return args.slice(1).reduce(function (s, nameAst) {
-            return s += eval(nameAst, env);
-        }, 0);
-    }
+    var add = toPlainFn(function () {
+        return [].slice.call(arguments).reduce(function (s, v) {
+            return s += v;
+        });
+    });
 
     it.describe("basic", function (it) {
         it("number", function () {

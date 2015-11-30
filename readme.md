@@ -45,17 +45,16 @@ Here the user can only use it as a sum-only-calculator.
 
 ```js
 var nisp = require("nisp");
+var toPlainFn = require("nisp/lib/toPlainFn");
 
 var env = {
-    "+": function add (ast, env, eval) {
-        return ast.slice(1).reduce(function (s, nameAst) {
-            return s += eval(nameAst, env);
-        }, 0);
-    }
+    "+": toPlainFn(function (a, b) {
+        return a + b;
+    })
 };
 
 var expresses = [
-    ["+", 1, 2, 3]
+    ["+", 1, 2]
 ];
 
 nisp(expresses, env); // => 6
@@ -69,7 +68,7 @@ Here only the admin user can sum things.
 var nisp = require("nisp");
 
 var env = {
-    "+": function add (ast, env, eval) {
+    "+": function (ast, env, eval) {
         if (!session.isAdmin) throw Error("permission not allowed");
 
         return ast.slice(1).reduce(function (s, nameAst) {
