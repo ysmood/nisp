@@ -1,3 +1,3 @@
-module.exports = function (args) {
-    return args[1];
+module.exports = function (ast) {
+    return ast[1];
 };

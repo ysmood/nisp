@@ -1,5 +1,5 @@
-module.exports = function (args, env, eval) {
-    return eval(args[1], env) ?
-        eval(args[2], env) :
-        eval(args[3], env);
+module.exports = function (ast, env, eval) {
+    return eval(ast[1], env) ?
+        eval(ast[2], env) :
+        eval(ast[3], env);
 };

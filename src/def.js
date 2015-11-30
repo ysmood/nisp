@@ -1,3 +1,3 @@
-module.exports = function (args, env, eval) {
-    return env[eval(args[1], env)] = eval(args[2], env);
+module.exports = function (ast, env, eval) {
+    return env[eval(ast[1], env)] = eval(ast[2], env);
 };

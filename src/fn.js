@@ -5,19 +5,19 @@ function assign (obj, src) {
     return obj;
 }
 
-module.exports = function (fnArgs) {
-    return function (args, env, eval) {
+module.exports = function (fnAst) {
+    return function (ast, env, eval) {
         var closure = assign({}, env);
         var i, len, ret;
 
-        len = fnArgs[1].length;
+        len = fnAst[1].length;
         for (i = 0; i < len; i++) {
-            closure[eval(fnArgs[1][i], env)] = eval(args[i + 1], env);
+            closure[eval(fnAst[1][i], env)] = eval(ast[i + 1], env);
         }
 
-        len = fnArgs.length;
-        for (i = 2; i < fnArgs.length; i++) {
-            ret = eval(fnArgs[i], closure);
+        len = fnAst.length;
+        for (i = 2; i < fnAst.length; i++) {
+            ret = eval(fnAst[i], closure);
         }
 
         return ret;

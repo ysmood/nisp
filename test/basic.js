@@ -9,8 +9,8 @@ var stdFns = {
 
 module.exports = function (it) {
     function add (args, env, eval) {
-        return args.slice(1).reduce(function (s, name) {
-            return s += eval(name, env);
+        return args.slice(1).reduce(function (s, nameAst) {
+            return s += eval(nameAst, env);
         }, 0);
     }
 

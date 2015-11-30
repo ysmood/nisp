@@ -8,34 +8,40 @@ function isFunction (obj) {
 
 /**
  * Eval a expression with specific env.
- * @param  {Array} exp Expression.
+ * @param  {Array} ast The ast of the program.
  * @param  {Object} env key/value object.
  * @return {Any} The computed value.
  */
-function eval (exp, env) {
+function eval (ast, env) {
     if (arguments.length < 2) throw new TypeError("env is required");
 
-    if (!isArray(exp)) {
-        return exp in env ? env[exp] : exp;
+    if (!isArray(ast)) {
+        return ast in env ? env[ast] : ast;
     }
 
-    var action = exp[0];
+    var action = ast[0];
 
     if (action in env) {
         var val = env[action];
-        return isFunction(val) ? val(exp, env, eval) : val;
+        return isFunction(val) ? val(ast, env, eval) : val;
     } else {
         return eval(action, env);
     }
 }
 
-module.exports = function (ast, env) {
+/**
+ * Eval a list of ast
+ * @param  {Array} astList
+ * @param  {Object} env
+ * @return {Any}
+ */
+module.exports = function (astList, env) {
     if (arguments.length < 2) env = {};
 
     // The main loop
-    var ret, len = ast.length;
+    var ret, len = astList.length;
     for (var i = 0; i < len; i++) {
-        ret = eval(ast[i], env);
+        ret = eval(astList[i], env);
     }
 
     return ret;
