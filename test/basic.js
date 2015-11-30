@@ -5,7 +5,7 @@ var stdFns = {
     if: require("../src/if"),
     plain: require("../src/plain"),
     fn: require("../src/fn")
-}
+};
 
 module.exports = function (it) {
     function add (args, env, eval) {
@@ -29,7 +29,7 @@ module.exports = function (it) {
 
         it("plain", function () {
             return it.eq(nisp([["`", [1, "ok"]]], {
-                '`': stdFns.plain
+                "`": stdFns.plain
             }), [1, "ok"]);
         });
 
@@ -42,7 +42,7 @@ module.exports = function (it) {
             var ast = [
                 ["def", "a", ["+", 1, 1]],
                 "a"
-            ]
+            ];
 
             return it.eq(nisp(ast, env), 2);
         });
@@ -55,7 +55,7 @@ module.exports = function (it) {
 
             var ast = [
                 ["if", ["+", 0, ["+", 1, 0]], 1, 2]
-            ]
+            ];
 
             return it.eq(nisp(ast, env), 1);
         });
@@ -75,7 +75,7 @@ module.exports = function (it) {
                     ]
                 ],
                 ["foo", 1, ["+", 1, 1]]
-            ]
+            ];
 
             return it.eq(nisp(ast, env), 4);
         });

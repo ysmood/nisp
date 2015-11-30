@@ -7,7 +7,9 @@
     "no": "no",
     "prepublish": "no build"
   },
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ysmood/nisp.git"
@@ -22,7 +24,45 @@
   },
   "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
+    "eslint": "^1.10.2",
     "junit": "1.0.0",
-    "nokit": "^0.16.7"
+    "nokit": "0.16.7"
+  },
+  "eslintConfig": {
+    "rules": {
+      "indent": [
+        2,
+        4
+      ],
+      "quotes": [
+        2,
+        "double"
+      ],
+      "linebreak-style": [
+        2,
+        "unix"
+      ],
+      "semi": [
+        2,
+        "always"
+      ],
+      "no-trailing-spaces": 2,
+      "space-before-function-paren": [
+        2,
+        "always"
+      ],
+      "eqeqeq": [
+        2,
+        "allow-null"
+      ],
+      "no-console": [
+        0
+      ]
+    },
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "extends": "eslint:recommended"
   }
 }
