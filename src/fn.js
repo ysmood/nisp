@@ -8,12 +8,18 @@ function assign (obj, src) {
 module.exports = function (fnArgs) {
     return function (args, env, eval) {
         var closure = assign({}, env);
-        var len = fnArgs[1].length;
+        var i, len, ret;
 
-        for (var i = 0; i < len; i++) {
+        len = fnArgs[1].length;
+        for (i = 0; i < len; i++) {
             closure[eval(fnArgs[1][i], env)] = eval(args[i + 1], env);
         }
 
-        return eval(fnArgs[2], closure);
+        len = fnArgs.length;
+        for (i = 2; i < fnArgs.length; i++) {
+            ret = eval(fnArgs[i], closure);
+        }
+
+        return ret;
     };
 };

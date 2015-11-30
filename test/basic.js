@@ -9,7 +9,9 @@ var stdFns = {
 
 module.exports = function (it) {
     function add (args, env, eval) {
-        return eval(args[1], env) + eval(args[2], env);
+        return args.slice(1).reduce(function (s, name) {
+            return s += eval(name, env);
+        }, 0);
     }
 
     it.describe("basic", function (it) {
@@ -38,7 +40,8 @@ module.exports = function (it) {
             };
 
             var ast = [
-                ["def", "a", ["+", 1, 1]]
+                ["def", "a", ["+", 1, 1]],
+                "a"
             ]
 
             return it.eq(nisp(ast, env), 2);
@@ -65,11 +68,16 @@ module.exports = function (it) {
             };
 
             var ast = [
-                ["def", "foo", ["fn", ["a", "b"], ["+", "a", "b"]]],
+                ["def", "foo",
+                    ["fn", ["a", "b"],
+                        ["def", "c", 1],
+                        ["+", "a", "b", "c"]
+                    ]
+                ],
                 ["foo", 1, ["+", 1, 1]]
             ]
 
-            return it.eq(nisp(ast, env), 3);
+            return it.eq(nisp(ast, env), 4);
         });
     });
 };
