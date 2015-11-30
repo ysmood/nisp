@@ -5,6 +5,7 @@
   "main": "lib",
   "scripts": {
     "no": "no",
+    "test": "no test",
     "prepublish": "no build"
   },
   "files": [
