@@ -1,5 +1,8 @@
 var nisp = require("../src");
-var toPlainFn = require("../src/toPlainFn");
+var Promise = require("yaku");
+var yutils = require("yaku/lib/utils");
+var plainFn = require("../src/plainFn");
+var plainAsyncFn = require("../src/plainAsyncFn");
 
 var stdFns = {
     def: require("../src/def"),
@@ -9,7 +12,7 @@ var stdFns = {
 };
 
 module.exports = function (it) {
-    var add = toPlainFn(function () {
+    var add = plainFn(function () {
         return [].slice.call(arguments).reduce(function (s, v) {
             return s += v;
         });
@@ -79,6 +82,25 @@ module.exports = function (it) {
             ];
 
             return it.eq(nisp(ast, env), 4);
+        });
+
+        it("plainAsyncFn", function () {
+            var env = {
+                "get": plainAsyncFn(function (val) {
+                    return yutils.sleep(13, val);
+                }, Promise),
+                "+": plainAsyncFn(function (a, b) {
+                    return yutils.sleep(13).then(function () {
+                        return a + b;
+                    });
+                }, Promise)
+            };
+
+            var ast = [
+                ["+", ["get", 1], ["get", 2]]
+            ];
+
+            return it.eq(nisp(ast, env), 3);
         });
     });
 };
