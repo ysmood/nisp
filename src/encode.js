@@ -11,7 +11,7 @@ module.exports = function (nisp) {
     }
 
     return {
-        tag: encodeURIComponent(nisp.replace(reg, "_")),
+        tag: nisp.replace(reg, "_"),
         json: nisp
     };
 };
