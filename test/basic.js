@@ -11,6 +11,10 @@ var stdFns = {
     fn: require("../src/fn")
 };
 
+var extraFns = {
+    encode: require("../src/encode")
+};
+
 module.exports = function (it) {
     var add = plainFn(function () {
         return [].slice.call(arguments).reduce(function (s, v) {
@@ -101,6 +105,27 @@ module.exports = function (it) {
             ];
 
             return it.eq(nisp(ast, env), 3);
+        });
+    });
+
+    it.describe("extra", function (it) {
+        it("encode object", function () {
+            it.eq(
+                extraFns.encode(["test", 10]),
+                {
+                    tag: "__test__10_",
+                    json: "[\"test\",10]"
+                }
+            );
+        });
+        it("encode string", function () {
+            it.eq(
+                extraFns.encode("[\"test\", 10]"),
+                {
+                    tag: "__test___10_",
+                    json: "[\"test\", 10]"
+                }
+            );
         });
     });
 };
