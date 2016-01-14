@@ -5,6 +5,7 @@ var plainFn = require("../src/plainFn");
 var plainAsyncFn = require("../src/plainAsyncFn");
 
 var stdFns = {
+    do: require("../src/do"),
     def: require("../src/def"),
     if: require("../src/if"),
     plain: require("../src/plain"),
@@ -36,13 +37,14 @@ module.exports = function (it) {
         });
 
         it("plain", function () {
-            return it.eq(nisp([["`", [1, "ok"]]], {
+            return it.eq(nisp(["`", [1, "ok"]], {
                 "`": stdFns.plain
             }), [1, "ok"]);
         });
 
         it("custom def", function () {
             var env = {
+                "do": stdFns.do,
                 "+": add,
                 $: stdFns.def
             };
@@ -61,21 +63,20 @@ module.exports = function (it) {
                 "?": stdFns.if
             };
 
-            var ast = [
-                ["?", ["+", 0, ["+", 1, 0]], 1, 2]
-            ];
+            var ast = ["?", ["+", 0, ["+", 1, 0]], 1, 2];
 
             return it.eq(nisp(ast, env), 1);
         });
 
         it("custom fn", function () {
             var env = {
+                "do": stdFns.do,
                 "+": add,
                 $: stdFns.def,
                 "@": stdFns.fn
             };
 
-            var ast = [
+            var ast = ["do",
                 ["$", "foo",
                     ["@", ["a", "b"],
                         ["$", "c", 1],
@@ -100,9 +101,7 @@ module.exports = function (it) {
                 }, Promise)
             };
 
-            var ast = [
-                ["+", ["get", 1], ["get", 2]]
-            ];
+            var ast = ["+", ["get", 1], ["get", 2]];
 
             return it.eq(nisp(ast, env), 3);
         });

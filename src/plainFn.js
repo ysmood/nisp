@@ -1,3 +1,4 @@
+// ["fn", <arg1>, <arg2>, ...]
 module.exports = function (fn) {
     return function (args, env, eval) {
         var plainArgs = [], len = args.length;

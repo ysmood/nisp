@@ -1,11 +1,3 @@
-function isArray (obj) {
-    return typeof obj === "object" && typeof obj.length === "number";
-}
-
-function isFunction (obj) {
-    return typeof obj === "function";
-}
-
 /**
  * Eval a expression with specific env.
  * @param  {Array} ast The ast of the program.
@@ -31,18 +23,21 @@ function eval (ast, env) {
 
 /**
  * Eval a list of ast
- * @param  {Array} astList
+ * @param  {Array} ast
  * @param  {Object} env
  * @return {Any}
  */
-module.exports = function (astList, env) {
+module.exports = function (ast, env) {
     if (arguments.length < 2) env = {};
 
-    // The main loop
-    var ret, len = astList.length;
-    for (var i = 0; i < len; i++) {
-        ret = eval(astList[i], env);
-    }
-
-    return ret;
+    return eval(ast, env);
 };
+
+function isArray (obj) {
+    return typeof obj === "object" && typeof obj.length === "number";
+}
+
+function isFunction (obj) {
+    return typeof obj === "function";
+}
+

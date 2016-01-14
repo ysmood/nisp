@@ -5,6 +5,7 @@ function assign (obj, src) {
     return obj;
 }
 
+// ["fn", [<arg1>, <arg2>, ...], <exp1>, <exp2>, ...]
 module.exports = function (fnAst) {
     return function (ast, env, eval) {
         // generate a closure

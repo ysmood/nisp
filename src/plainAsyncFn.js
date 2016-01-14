@@ -1,9 +1,5 @@
-function spread (fn) {
-    return function (args) {
-        return fn.apply(null, args);
-    };
-}
 
+// ["fn", <arg1>, <arg2>, ...]
 module.exports = function (fn, customPromise) {
     var P = customPromise || Promise;
     fn = spread(fn);
@@ -17,3 +13,9 @@ module.exports = function (fn, customPromise) {
         return P.all(plainArgs).then(fn);
     };
 };
+
+function spread (fn) {
+    return function (args) {
+        return fn.apply(null, args);
+    };
+}
