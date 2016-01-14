@@ -1,9 +1,3 @@
-function assign (obj, src) {
-    for (var k in src) {
-        obj[k] = src[k];
-    }
-    return obj;
-}
 
 // ["fn", [<arg1>, <arg2>, ...], <exp1>, <exp2>, ...]
 module.exports = function (fnAst) {
@@ -27,3 +21,11 @@ module.exports = function (fnAst) {
         return ret;
     };
 };
+
+function assign (obj, src) {
+    for (var k in src) {
+        obj[k] = src[k];
+    }
+    return obj;
+}
+

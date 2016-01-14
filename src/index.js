@@ -22,7 +22,7 @@ function eval (ast, env) {
 }
 
 /**
- * Eval a list of ast
+ * Eval an  ast
  * @param  {Array} ast
  * @param  {Object} env
  * @return {Any}
