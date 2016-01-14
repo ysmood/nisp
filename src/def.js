@@ -1,4 +1,4 @@
 // ["def", <name>, <value>]
-module.exports = function (ast, env, eval) {
-    return env[eval(ast[1], env)] = eval(ast[2], env);
+module.exports = function (ast, env, run) {
+    return env[run(ast[1], env)] = run(ast[2], env);
 };

@@ -4,7 +4,7 @@
  * @param  {Object} env key/value object.
  * @return {Any} The computed value.
  */
-function eval (ast, env) {
+function run (ast, env) {
     if (arguments.length < 2) throw new TypeError("env is required");
 
     if (!isArray(ast)) {
@@ -15,9 +15,9 @@ function eval (ast, env) {
 
     if (action in env) {
         var val = env[action];
-        return isFunction(val) ? val(ast, env, eval) : val;
+        return isFunction(val) ? val(ast, env, run) : val;
     } else {
-        return eval(action, env);
+        return run(action, env);
     }
 }
 
@@ -30,7 +30,7 @@ function eval (ast, env) {
 module.exports = function (ast, env) {
     if (arguments.length < 2) env = {};
 
-    return eval(ast, env);
+    return run(ast, env);
 };
 
 function isArray (obj) {

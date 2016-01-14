@@ -1,7 +1,7 @@
 
 // ["fn", [<arg1>, <arg2>, ...], <exp1>, <exp2>, ...]
 module.exports = function (fnAst) {
-    return function (ast, env, eval) {
+    return function (ast, env, run) {
         // generate a closure
         var closure = assign({}, env);
         var i, len, ret;
@@ -9,13 +9,13 @@ module.exports = function (fnAst) {
         // assign arguments to closure
         len = fnAst[1].length;
         for (i = 0; i < len; i++) {
-            closure[eval(fnAst[1][i], env)] = eval(ast[i + 1], env);
+            closure[run(fnAst[1][i], env)] = run(ast[i + 1], env);
         }
 
-        // eval the function
+        // run the function
         len = fnAst.length;
         for (i = 2; i < fnAst.length; i++) {
-            ret = eval(fnAst[i], closure);
+            ret = run(fnAst[i], closure);
         }
 
         return ret;

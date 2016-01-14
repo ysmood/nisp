@@ -96,10 +96,10 @@ var nisp = require("nisp");
 var plainFn = require("nisp/lib/plainFn");
 
 var env = {
-    "if": function (ast, env, eval) {
-        return eval(ast[1], env) ?
-            eval(ast[2], env) :
-            eval(ast[3], env);
+    "if": function (ast, env, run) {
+        return run(ast[1], env) ?
+            run(ast[2], env) :
+            run(ast[3], env);
     },
     // Most times you don't want to use it.
     "non-lazy-if": plainFn(function (cond, a, b) {
