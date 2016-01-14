@@ -11,14 +11,16 @@ function run (ast, env) {
         return ast in env ? env[ast] : ast;
     }
 
-    var action = ast[0];
+    var action = run(ast[0], env);
+
+    if (isFunction(action)) return action(ast, env, run);
 
     if (action in env) {
         var val = env[action];
         return isFunction(val) ? val(ast, env, run) : val;
-    } else {
-        return run(action, env);
     }
+
+    return run(action, env);
 }
 
 /**

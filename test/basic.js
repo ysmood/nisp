@@ -9,6 +9,8 @@ var stdFns = {
     def: require("../src/def"),
     if: require("../src/if"),
     plain: require("../src/plain"),
+    set: require("../src/set"),
+    get: require("../src/get"),
     fn: require("../src/fn")
 };
 
@@ -40,6 +42,27 @@ module.exports = function (it) {
             return it.eq(nisp(["`", [1, "ok"]], {
                 "`": stdFns.plain
             }), [1, "ok"]);
+        });
+
+        it("set get", function () {
+            var env = {
+                do: stdFns.do,
+                "+": add,
+                "@": stdFns.fn,
+                set: stdFns.set,
+                get: stdFns.get
+            };
+
+            var ast = ["do",
+                ["set", "foo",
+                    ["@", ["a", "b"],
+                        ["+", "a", "b"]
+                    ]
+                ],
+                [["get", "foo"], 1, 2]
+            ];
+
+            return it.eq(nisp(ast, env), 3);
         });
 
         it("custom def", function () {
