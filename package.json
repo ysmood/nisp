@@ -26,9 +26,9 @@
   "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
     "eslint": "1.10.3",
-    "junit": "1.1.0",
-    "nokit": "0.16.10",
-    "yaku": "0.11.5"
+    "junit": "1.1.1",
+    "nokit": "0.17.1",
+    "yaku": "0.11.7"
   },
   "eslintConfig": {
     "rules": {
