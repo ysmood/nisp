@@ -1,7 +1,7 @@
 
 // ["fn", [<arg1>, <arg2>, ...], <exp1>, <exp2>, ...]
-module.exports = function (fnAst) {
-    return function (ast, env, run) {
+module.exports = function (fnAst, env) {
+    return function (ast, nil, run) {
         // generate a closure
         var closure = assign({}, env);
         var i, len, ret;
