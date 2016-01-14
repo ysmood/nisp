@@ -45,10 +45,10 @@ Here the user can only use it as a sum-only-calculator.
 
 ```js
 var nisp = require("nisp");
-var toPlainFn = require("nisp/lib/toPlainFn");
+var plainFn = require("nisp/lib/plainFn");
 
 var env = {
-    "+": toPlainFn(function (a, b) {
+    "+": plainFn(function (a, b) {
         return a + b;
     })
 };
@@ -66,10 +66,10 @@ Here only the admin user can sum things.
 
 ```js
 var nisp = require("nisp");
-var toPlainFn = require("nisp/lib/toPlainFn");
+var plainFn = require("nisp/lib/plainFn");
 
 var env = {
-    "+": toPlainFn(function (a, b) {
+    "+": plainFn(function (a, b) {
         if (!session.isAdmin) throw Error("permission not allowed");
         return a + b;
     })
@@ -93,7 +93,7 @@ it cannot be achieved without ast manipulation.
 
 ```js
 var nisp = require("nisp");
-var toPlainFn = require("nisp/lib/toPlainFn");
+var plainFn = require("nisp/lib/plainFn");
 
 var env = {
     "if": function (ast, env, eval) {
@@ -102,7 +102,7 @@ var env = {
             eval(ast[3], env);
     },
     // Most times you don't want to use it.
-    "non-lazy-if": toPlainFn(function (cond, a, b) {
+    "non-lazy-if": plainFn(function (cond, a, b) {
         return cond ? a : b;
     })
 };
