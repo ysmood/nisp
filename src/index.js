@@ -5,22 +5,22 @@
  * @return {Any} The computed value.
  */
 function run (ast, env) {
-    if (arguments.length < 2) throw new TypeError("env is required");
+    if (!env) throw new TypeError("env is required");
 
-    if (!isArray(ast)) {
+    if (isArray(ast)) {
+        var action = run(ast[0], env);
+
+        if (isFunction(action)) return action(ast, env, run);
+
+        if (action in env) {
+            var val = env[action];
+            return isFunction(val) ? val(ast, env, run) : val;
+        } else {
+            return run(action, env);
+        }
+    } else {
         return ast in env ? env[ast] : ast;
     }
-
-    var action = run(ast[0], env);
-
-    if (isFunction(action)) return action(ast, env, run);
-
-    if (action in env) {
-        var val = env[action];
-        return isFunction(val) ? val(ast, env, run) : val;
-    }
-
-    return run(action, env);
 }
 
 /**
@@ -30,7 +30,7 @@ function run (ast, env) {
  * @return {Any}
  */
 module.exports = function (ast, env) {
-    if (arguments.length < 2) env = {};
+    if (!env) env = {};
 
     return run(ast, env);
 };
