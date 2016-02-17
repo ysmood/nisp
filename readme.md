@@ -27,13 +27,15 @@ Only if the `$` function is defined, the user can define variable.
 var nisp = require("nisp");
 
 var env = {
-    $: require("nisp/lib/def"),
+    do: require("nisp/lib/do"),
+    set: require("nisp/lib/set"),
+    get: require("nisp/lib/get"),
     if: require("nisp/lib/if")
 };
 
-var expresses = [
-    ["$", "a", ["if", false, 10, 20]],
-    "a"
+var expresses = ["do",
+    ["set", "a", ["if", false, 10, 20]],
+    ["get", "a"]
 ];
 
 nisp(expresses, env); // => 20
@@ -53,9 +55,7 @@ var env = {
     })
 };
 
-var expresses = [
-    ["+", 1, 2]
-];
+var expresses = ["+", 1, 2];
 
 nisp(expresses, env); // => 6
 ```
@@ -69,21 +69,16 @@ var nisp = require("nisp");
 var plainFn = require("nisp/lib/plainFn");
 
 var env = {
+    session: { isAdmin: false },
     "+": plainFn(function (a, b) {
-        if (!session.isAdmin) throw Error("permission not allowed");
+        if (!env.session.isAdmin) throw Error("permission not allowed");
         return a + b;
     })
 };
 
-var expresses = [
-    ["+", 1, 2]
-];
+var expresses = ["+", 1, 2];
 
-var expresses = [
-    ["+", 1, 2, 3]
-];
-
-nisp(expresses, env); // => 6 or Error
+nisp(expresses, env); // => Error
 ```
 
 ### Full control the ast
@@ -107,15 +102,9 @@ var env = {
     })
 };
 
-var expresses = [
-    ["+", 1, 2]
-];
+var expresses = ["+", 1, 2];
 
-var expresses = [
-    ["+", 1, 2, 3]
-];
-
-nisp(expresses, env); // => 6 or Error
+nisp(expresses, env); // => 3
 ```
 
 # API

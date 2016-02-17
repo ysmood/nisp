@@ -6,7 +6,6 @@ var plainAsyncFn = require("../src/plainAsyncFn");
 
 var stdFns = {
     do: require("../src/do"),
-    def: require("../src/def"),
     if: require("../src/if"),
     plain: require("../src/plain"),
     set: require("../src/set"),
@@ -65,21 +64,6 @@ module.exports = function (it) {
             return it.eq(nisp(ast, env), 3);
         });
 
-        it("custom def", function () {
-            var env = {
-                "do": stdFns.do,
-                "+": add,
-                $: stdFns.def
-            };
-
-            var ast = [
-                ["$", "a", ["+", 1, 1]],
-                "a"
-            ];
-
-            return it.eq(nisp(ast, env), 2);
-        });
-
         it("custom if", function () {
             var env = {
                 "+": add,
@@ -95,18 +79,19 @@ module.exports = function (it) {
             var env = {
                 "do": stdFns.do,
                 "+": add,
-                $: stdFns.def,
+                "get": stdFns.get,
+                "set": stdFns.set,
                 "@": stdFns.fn
             };
 
             var ast = ["do",
-                ["$", "foo",
+                ["set", "foo",
                     ["@", ["a", "b"],
-                        ["$", "c", 1],
-                        ["+", "a", "b", "c"]
+                        ["set", "c", 1],
+                        ["+", "a", "b", ["get", "c"]]
                     ]
                 ],
-                ["foo", 1, ["+", 1, 1]]
+                [["get", "foo"], 1, ["+", 1, 1]]
             ];
 
             return it.eq(nisp(ast, env), 4);
