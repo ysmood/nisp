@@ -64,6 +64,16 @@ module.exports = function (it) {
             return it.eq(nisp(ast, env), 3);
         });
 
+        it("multiple level without do", function () {
+            var env = {
+                "+": add
+            };
+
+            var ast = [["+", 1, ["+", 1, 1]]];
+
+            return it.eq(nisp(ast, env), 3);
+        });
+
         it("custom if", function () {
             var env = {
                 "+": add,
