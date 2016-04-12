@@ -11,7 +11,7 @@ module.exports = function (nisp) {
     }
 
     return {
-        tag: nisp.replace(reg, "_"),
+        tag: nisp.replace(reg, "_").slice(0, 100),
         json: nisp
     };
 };
