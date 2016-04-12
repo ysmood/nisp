@@ -1,7 +1,7 @@
 
 // ["fn", <arg1>, <arg2>, ...]
 module.exports = function (fn, customPromise) {
-    var P = customPromise || Promise;
+    var P = customPromise || Promise; // eslint-disable-line
     fn = spread(fn);
 
     return function (args, env, run) {
