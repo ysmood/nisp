@@ -62,25 +62,37 @@ var expresses = ["+", 1, 2];
 nisp(expresses, env); // => 6
 ```
 
-### Define your own function with permission check
-
-Here only the admin user can sum things.
+### Composable RPC
 
 ```js
 var nisp = require("nisp");
 var plainFn = require("nisp/lib/plainFn");
 
 var env = {
-    session: { isAdmin: false },
-    "+": plainFn(function (a, b) {
-        if (!env.session.isAdmin) throw Error("permission not allowed");
-        return a + b;
+    concat: plainFn(function () {
+        return Array.prototype.concat.apply([], arguments);
+    }),
+
+    map: plainFn(function (fn, arr) {
+        return arr.map(fn);
+    }),
+
+    getAnimals: plainFn(function () {
+        return ['cat', 'dog'];
+    }),
+
+    getFruits: plainFn(function () {
+        return ['apple', 'banana'];
+    }),
+
+    getDetails: plainFn(function (type) {
+        return 'Details: ' + type;
     })
 };
 
-var expresses = ["+", 1, 2];
+var expresses = ["map", "getUrl", ["concat", ["getAnimals"], ["getFruits"]]];
 
-nisp(expresses, env); // => Error
+nisp(expresses, env);
 ```
 
 ### Full control the ast
@@ -133,7 +145,7 @@ function waitNumber (val) {
 };
 
 var env = {
-    "download": plainAsyncFn(function () {
+    download: plainAsyncFn(function () {
         return waitNumber(1);
     }),
 

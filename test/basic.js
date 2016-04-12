@@ -134,6 +134,22 @@ module.exports = function (it) {
             return it.eq(nisp(ast, env), 2);
         });
 
+        it("fn as arg", function () {
+            var env = {
+                "foo": function () {
+                    return 1;
+                },
+
+                "map": plainFn(function (a, b) {
+                    return a() + b();
+                })
+            };
+
+            var ast = ["map", "foo", "foo"];
+
+            return it.eq(nisp(ast, env), 2);
+        });
+
         it("plainAsyncFn", function () {
             var env = {
                 "get": plainAsyncFn(function (val) {
