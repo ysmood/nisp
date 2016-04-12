@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "a non-Turing-complete lisp-0",
   "main": "lib",
   "scripts": {
