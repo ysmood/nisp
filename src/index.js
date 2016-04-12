@@ -36,7 +36,7 @@ module.exports = function (ast, env) {
 };
 
 function isArray (obj) {
-    return typeof obj === "object" && typeof obj.length === "number";
+    return typeof obj === "object" && obj !== null && typeof obj.length === "number";
 }
 
 function isFunction (obj) {

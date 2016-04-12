@@ -37,6 +37,10 @@ module.exports = function (it) {
             return it.eq(nisp([{ a: "ok" }]), { a: "ok" });
         });
 
+        it("null", function () {
+            return it.eq(nisp([null]), null);
+        });
+
         it("plain", function () {
             return it.eq(nisp(["`", [1, "ok"]], {
                 "`": stdFns.plain
