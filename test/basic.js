@@ -26,25 +26,35 @@ module.exports = function (it) {
 
     it.describe("basic", function (it) {
         it("number", function () {
-            return it.eq(nisp([1]), 1);
+            return it.eq(nisp(1), 1);
         });
 
         it("string", function () {
-            return it.eq(nisp(["ok"]), "ok");
+            return it.eq(nisp("ok"), "ok");
         });
 
         it("object", function () {
-            return it.eq(nisp([{ a: "ok" }]), { a: "ok" });
+            return it.eq(nisp({ a: "ok" }), { a: "ok" });
         });
 
         it("null", function () {
-            return it.eq(nisp([null]), null);
+            return it.eq(nisp(null), null);
         });
 
-        it("plain", function () {
+        it("null array", function () {
+            return it.eq(nisp([null]), [null]);
+        });
+
+        it("plain fn", function () {
             return it.eq(nisp(["`", [1, "ok"]], {
                 "`": stdFns.plain
             }), [1, "ok"]);
+        });
+
+        it("plain data", function () {
+            var ast = [1, 2];
+
+            return it.eq(nisp(ast, {}), [1, 2]);
         });
 
         it("set get", function () {
@@ -75,7 +85,7 @@ module.exports = function (it) {
 
             var ast = [["+", 1, ["+", 1, 1]]];
 
-            return it.eq(nisp(ast, env), 3);
+            return it.eq(nisp(ast, env), [3]);
         });
 
         it("custom if", function () {
