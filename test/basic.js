@@ -3,6 +3,7 @@ var Promise = require("yaku");
 var yutils = require("yaku/lib/utils");
 var plainFn = require("../src/plainFn");
 var plainAsyncFn = require("../src/plainAsyncFn");
+var lazyFn = require("../src/lazyFn");
 
 var stdFns = {
     do: require("../src/do"),
@@ -119,6 +120,18 @@ module.exports = function (it) {
             ];
 
             return it.eq(nisp(ast, env), 4);
+        });
+
+        it("lazyFn", function () {
+            var env = {
+                "+": lazyFn(function (args) {
+                    return args(0) + args(1);
+                })
+            };
+
+            var ast = ["+", 1, 1];
+
+            return it.eq(nisp(ast, env), 2);
         });
 
         it("plainAsyncFn", function () {
