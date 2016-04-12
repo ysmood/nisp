@@ -11,8 +11,10 @@ it is used to exchange plain data.
 You may ask what it does? Yes it does nothing. And that is exactly what a composable permission
 protocol need. We use it to expose composable api.
 
-The ast of nisp is plain JSON, the js implementation is only 35 lines of code, so it will be very to port nisp to other languages.
+The ast of nisp is plain JSON, the js implementation is only 35 lines of code, so it will be very to port nisp to other languages. No closure or complex data type is required, even plain C can implement nisp easily.
 
+Everything inside nisp is a function, it's very easy to keep everything type safe, plus the composable nature,
+nisp is an ideal middle layer to carry query or RPC.
 
 # Quick Start
 
@@ -88,17 +90,25 @@ it cannot be achieved without ast manipulation.
 
 ```js
 var nisp = require("nisp");
+var lazyFn = require("nisp/lib/lazyFn");
 var plainFn = require("nisp/lib/plainFn");
 
 var env = {
-    "if": function (ast, env, run) {
-        return run(ast[1], env) ?
-            run(ast[2], env) :
-            run(ast[3], env);
-    },
+    // Full lazy.
+    "if": lazyFn(function (v) {
+        return v(0) ? v(1) : v(2);
+    }),
+
     // Most times you don't want to use it.
-    "non-lazy-if": plainFn(function (cond, a, b) {
+    "non-lazy-if": plainFn(function (cond) {
         return cond ? a : b;
+    })
+
+    // Even half lazy, you have the full control to how lazy the program will be.
+    // No matter v(0) is true or false, the v(1) will be calculated.
+    "half-lazy-if": lazyFn(function (v) {
+        var v1 = v(1);
+        return v(0) ? v1 : v(2);
     })
 };
 
@@ -107,6 +117,43 @@ var expresses = ["+", 1, 2];
 nisp(expresses, env); // => 3
 ```
 
+### Make a complete async language
+
+```js
+var nisp = require("nisp");
+var plainAsyncFn = require("nisp/lib/plainAsyncFn");
+var Promise = require('yaku');
+
+function waitNumber (val) {
+    return new Promise(function (r) {
+        return setTimeout((function () {
+            return r(val);
+        }), 1000);
+    });
+};
+
+var env = {
+    "download": plainAsyncFn(function () {
+        return waitNumber(1);
+    }),
+
+    "+": plainAsyncFn(function (a, b) {
+        return a + b;
+    })
+};
+
+// Here we can write async code a async way.
+var expresses = ["+", ["download"], ["download"]];
+
+nisp(expresses, env).then(function (out) {
+    console.log(out) // => 2
+});
+```
+
+
+
 # API
+
+TODO...
 
 Checkout the files in `src` folder.

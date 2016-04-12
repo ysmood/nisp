@@ -1,7 +1,7 @@
 {
   "name": "nisp",
-  "version": "0.3.2",
-  "description": "a non-Turing-complete lisp-0",
+  "version": "0.4.1",
+  "description": "A language that for easily build cross-language language",
   "main": "lib",
   "scripts": {
     "no": "no",
