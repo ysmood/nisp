@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A language that for easily build cross-language language",
   "main": "core/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "prepublish": "no build"
   },
   "files": [
-    "lib"
+    "core", "fn", "lang"
   ],
   "repository": {
     "type": "git",

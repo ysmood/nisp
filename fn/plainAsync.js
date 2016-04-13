@@ -10,7 +10,7 @@ module.exports = function (fn, customPromise) {
         }
 
         return P.all(plainArgs).then(function (syncedArgs) {
-            return fn(syncedArgs, env, sandbox, args);
+            return fn(syncedArgs, env, sandbox, args, run);
         });
     };
 };
