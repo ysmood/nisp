@@ -29,10 +29,8 @@ function run (ast, sandbox, env) {
 
             return out;
         }
-    } else if (isString(ast)) {
-        return sandbox[ast];
     } else {
-        return ast;
+        return ast in sandbox ? sandbox[ast] : ast;
     }
 }
 

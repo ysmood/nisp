@@ -31,7 +31,7 @@ module.exports = function (it) {
         });
 
         it("string", function () {
-            return it.eq(nisp(["`", "ok"], { "`": langs.plain }), "ok");
+            return it.eq(nisp(["ok"]), ["ok"]);
         });
 
         it("object", function () {
