@@ -1,21 +1,21 @@
-var nisp = require("../src");
+var nisp = require("../lib");
 var Promise = require("yaku");
 var yutils = require("yaku/lib/utils");
-var plainFn = require("../src/plainFn");
-var plainAsyncFn = require("../src/plainAsyncFn");
-var lazyFn = require("../src/lazyFn");
+var plainFn = require("../lib/plainFn");
+var plainAsyncFn = require("../lib/plainAsyncFn");
+var lazyFn = require("../lib/lazyFn");
 
 var stdFns = {
-    do: require("../src/do"),
-    if: require("../src/if"),
-    plain: require("../src/plain"),
-    set: require("../src/set"),
-    get: require("../src/get"),
-    fn: require("../src/fn")
+    do: require("../lib/do"),
+    if: require("../lib/if"),
+    plain: require("../lib/plain"),
+    set: require("../lib/set"),
+    get: require("../lib/get"),
+    fn: require("../lib/fn")
 };
 
 var extraFns = {
-    encode: require("../src/encode")
+    encode: require("../lib/encode")
 };
 
 module.exports = function (it) {

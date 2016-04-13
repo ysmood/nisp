@@ -1,16 +1,11 @@
 var kit = require("nokit");
 
 module.exports = function (task) {
-    task("build", ["lint", "clean"], function () {
-        return kit.copy("src", "lib");
+    task("build", ["lint"], function () {
     });
 
     task("lint", function () {
-        return kit.spawn("eslint", ["{src,test}/**/*.js", "nofile.js"]);
-    });
-
-    task("clean", function () {
-        return kit.remove("lib");
+        return kit.spawn("eslint", ["{lib,test}/**/*.js", "nofile.js"]);
     });
 
     task("test", function () {
