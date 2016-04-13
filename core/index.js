@@ -29,8 +29,10 @@ function run (ast, sandbox, env) {
 
             return out;
         }
+    } else if (isString(ast)) {
+        return sandbox[ast];
     } else {
-        return ast in sandbox ? sandbox[ast] : ast;
+        return ast;
     }
 }
 
@@ -47,6 +49,10 @@ module.exports = function (ast, sandbox, env) {
 
     return run(ast, sandbox, env);
 };
+
+function isString (obj) {
+    return typeof obj === "string";
+}
 
 function isArray (obj) {
     return typeof obj === "object" && obj !== null && typeof obj.length === "number";
