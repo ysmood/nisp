@@ -9,7 +9,7 @@ module.exports = function (run, fnAst, sandbox, env) {
         // assign arguments to sandbox
         len = fnAst[1].length;
         for (i = 0; i < len; i++) {
-            closure[run(fnAst[1][i], sandbox, env)] = run(ast[i + 1], sandbox, env);
+            closure[run(fnAst[1][i], closure, env)] = run(ast[i + 1], closure, env);
         }
 
         // run the function

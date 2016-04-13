@@ -130,6 +130,7 @@ module.exports = function (it) {
             };
 
             var ast = ["do",
+                ["def", "c", 10],
                 ["def", "foo",
                     ["@", ["a", "b"],
                         ["def", "c", 1],
