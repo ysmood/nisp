@@ -2,7 +2,6 @@
 // ["fn", <arg1>, <arg2>, ...]
 module.exports = function (fn, customPromise) {
     var P = customPromise || Promise; // eslint-disable-line
-    fn = spread(fn);
 
     return function (run, args, sandbox, env) {
         var plainArgs = [], len = args.length;
@@ -10,12 +9,8 @@ module.exports = function (fn, customPromise) {
             plainArgs[i - 1] = run(args[i], sandbox, env);
         }
 
-        return P.all(plainArgs).then(fn);
+        return P.all(plainArgs).then(function (syncedArgs) {
+            return fn(syncedArgs, env, sandbox, args);
+        });
     };
 };
-
-function spread (fn) {
-    return function (args) {
-        return fn.apply(null, args);
-    };
-}

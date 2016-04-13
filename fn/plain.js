@@ -7,6 +7,6 @@ module.exports = function (fn) {
             plainArgs[i - 1] = run(args[i], sandbox, env);
         }
 
-        return fn.apply(null, plainArgs);
+        return fn(plainArgs, env, sandbox, args);
     };
 };

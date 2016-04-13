@@ -1,31 +1,14 @@
 /*eslint-disable */
 
-var nisp = require("../src");
-var plainAsyncFn = require("../src/plainAsyncFn");
-var Promise = require('yaku');
-function waitNumber (val) {
-    return new Promise(function (r) {
-        return setTimeout((function () {
-            return r(val);
-        }), 1000);
-    });
+var nisp = require('../core');
+var plain = require('../fn/plain');
+
+var sandbox = {
+    "+": plain(function (args) {
+        return args.reduce(function (s, n) { return s + n; });
+    })
 };
 
-var env = {
-    sandbox: {
-        "download": function (ast, env, run) {
-            env.session
-            return waitNumber(1);
-        },
+var expresses = ["+", 1, 2, 3];
 
-        "+": plainAsyncFn(function (a, b) {
-            return a + b;
-        })
-    }
-};
-
-var expresses = ["+", ["download"], ["download"]];
-
-nisp(expresses, env).then(function (out) {
-    console.log(out) // => 2
-});
+console.log(nisp(expresses, sandbox)); // => 20

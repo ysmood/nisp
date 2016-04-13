@@ -1,5 +1,8 @@
 # nisp
 
+[![NPM version](https://badge.fury.io/js/nisp.svg)](http://badge.fury.io/js/nisp) [![Build Status](https://travis-ci.org/ysmood/nisp.svg)](https://travis-ci.org/ysmood/nisp) [![Deps Up to Date](https://david-dm.org/ysmood/nisp.svg?style=flat)](https://david-dm.org/ysmood/nisp)
+
+
 The interesting part is that it is designed to be non-turing-complete.
 
 You have the full control of the vm, you can decide what the language can have, for example,
@@ -28,19 +31,18 @@ Only if the `$` function is defined, the user can define variable.
 ```js
 var nisp = require("nisp");
 
-var env = {
-    do: require("nisp/lib/do"),
-    set: require("nisp/lib/set"),
-    get: require("nisp/lib/get"),
-    if: require("nisp/lib/if")
+var sandbox = {
+    do: require("nisp/lang/do"),
+    def: require("nisp/lang/def"),
+    if: require("nisp/lang/if")
 };
 
 var expresses = ["do",
-    ["set", "a", ["if", false, 10, 20]],
-    ["get", "a"]
+    ["def", "a", ["if", false, 10, 20]],
+    "a"
 ];
 
-nisp(expresses, env); // => 20
+nisp(expresses, sandbox); // => 20
 ```
 
 ### Define your own function
@@ -49,50 +51,59 @@ Here the user can only use it as a sum-only-calculator.
 
 ```js
 var nisp = require("nisp");
-var plainFn = require("nisp/lib/plainFn");
+var plain = require("nisp/fn/plain");
 
-var env = {
-    "+": plainFn(function (a, b) {
-        return a + b;
+var sandbox = {
+    "+": plain(function (args) {
+        return args.reduce(function (s, n) { return s + n; });
     })
 };
 
-var expresses = ["+", 1, 2];
+var expresses = ["+", 1, 2, 3];
 
-nisp(expresses, env); // => 6
+nisp(expresses, sandbox); // => 6
 ```
 
 ### Composable RPC
 
 ```js
 var nisp = require("nisp");
-var plainFn = require("nisp/lib/plainFn");
+var plain = require("nisp/fn/plain");
 
-var env = {
-    concat: plainFn(function () {
+var sandbox = {
+    concat: plain(function () {
         return Array.prototype.concat.apply([], arguments);
     }),
 
-    map: plainFn(function (fn, arr) {
+    map: plain(function (args) {
+        var fn = args[0], arr = args[1];
         return arr.map(fn);
     }),
 
-    getAnimals: plainFn(function () {
-        return ['cat', 'dog'];
+    getAnimals: plain(function (args, session) {
+        if (session.isZooKeeper)
+            return ['cat', 'dog'];
+        else
+            throw new Error("Not Allowed");
     }),
 
-    getFruits: plainFn(function () {
+    getFruits: plain(function () {
         return ['apple', 'banana'];
     }),
 
-    getDetails: plainFn(function (type) {
-        return 'Details: ' + type;
+    getDetails: plain(function (args) {
+        return 'Details: ' + args;
     })
 };
 
+var session = {
+    user: 'Jack',
+    isZooKeeper: true
+}
+
 var expresses = ["map", "getUrl", ["concat", ["getAnimals"], ["getFruits"]]];
 
-nisp(expresses, env);
+nisp(expresses, sandbox, session);
 ```
 
 ### Full control the ast
@@ -102,23 +113,23 @@ it cannot be achieved without ast manipulation.
 
 ```js
 var nisp = require("nisp");
-var lazyFn = require("nisp/lib/lazyFn");
-var plainFn = require("nisp/lib/plainFn");
+var args = require("nisp/lib/args");
+var plain = require("nisp/fn/plain");
 
-var env = {
+var sandbox = {
     // Full lazy.
-    "if": lazyFn(function (v) {
+    "if": args(function (v) {
         return v(0) ? v(1) : v(2);
     }),
 
     // Most times you don't want to use it.
-    "non-lazy-if": plainFn(function (cond) {
-        return cond ? a : b;
+    "non-lazy-if": plain(function (args) {
+        return args[0] ? args[1] : args[2];
     })
 
     // Even half lazy, you have the full control to how lazy the program will be.
     // No matter v(0) is true or false, the v(1) will be calculated.
-    "half-lazy-if": lazyFn(function (v) {
+    "half-lazy-if": args(function (v) {
         var v1 = v(1);
         return v(0) ? v1 : v(2);
     })
@@ -126,14 +137,14 @@ var env = {
 
 var expresses = ["+", 1, 2];
 
-nisp(expresses, env); // => 3
+nisp(expresses, sandbox); // => 3
 ```
 
 ### Make a complete async language
 
 ```js
 var nisp = require("nisp");
-var plainAsyncFn = require("nisp/lib/plainAsyncFn");
+var plainAsync = require("nisp/fn/plainAsync");
 var Promise = require('yaku');
 
 function waitNumber (val) {
@@ -144,20 +155,20 @@ function waitNumber (val) {
     });
 };
 
-var env = {
-    download: plainAsyncFn(function () {
+var sandbox = {
+    download: plainAsync(function () {
         return waitNumber(1);
     }),
 
-    "+": plainAsyncFn(function (a, b) {
-        return a + b;
+    "+": plainAsync(function (args) {
+        return args.reduce(function (s, n) { return s + n; });
     })
 };
 
 // Here we can write async code a async way.
 var expresses = ["+", ["download"], ["download"]];
 
-nisp(expresses, env).then(function (out) {
+nisp(expresses, sandbox).then(function (out) {
     console.log(out) // => 2
 });
 ```
