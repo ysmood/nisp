@@ -1,29 +1,28 @@
-var nisp = require("../lib");
+var nisp = require("../core");
 var Promise = require("yaku");
 var yutils = require("yaku/lib/utils");
-var plainFn = require("../lib/plainFn");
-var plainAsyncFn = require("../lib/plainAsyncFn");
-var lazyFn = require("../lib/lazyFn");
 
-var stdFns = {
-    do: require("../lib/do"),
-    if: require("../lib/if"),
-    plain: require("../lib/plain"),
-    set: require("../lib/set"),
-    get: require("../lib/get"),
-    fn: require("../lib/fn")
+var fns = {
+    plain: require("../fn/plain"),
+    plainAsync: require("../fn/plainAsync"),
+    args: require("../fn/args")
 };
 
-var extraFns = {
-    encode: require("../lib/encode")
-};
+var langs = {
+    do: require("../lang/do"),
+    if: require("../lang/if"),
+    plain: require("../lang/plain"),
+    def: require("../lang/def"),
+    fn: require("../lang/fn"),
 
-module.exports = function (it) {
-    var add = plainFn(function () {
+    add: fns.plain(function () {
         return [].slice.call(arguments).reduce(function (s, v) {
             return s += v;
         });
-    });
+    })
+};
+
+module.exports = function (it) {
 
     it.describe("basic", function (it) {
         it("number", function () {
@@ -48,114 +47,112 @@ module.exports = function (it) {
 
         it("plain fn", function () {
             return it.eq(nisp(["`", [1, "ok"]], {
-                "`": stdFns.plain
+                "`": langs.plain
             }), [1, "ok"]);
         });
 
         it("plain data", function () {
             var ast = [1, 2];
 
-            return it.eq(nisp(ast, {}), [1, 2]);
+            return it.eq(nisp(ast), [1, 2]);
         });
 
-        it("set get", function () {
-            var env = {
-                do: stdFns.do,
-                "+": add,
-                "@": stdFns.fn,
-                set: stdFns.set,
-                get: stdFns.get
+        it("def", function () {
+            var sandbox = {
+                do: langs.do,
+                "+": langs.add,
+                "@": langs.fn,
+                def: langs.def
             };
 
             var ast = ["do",
-                ["set", "foo",
+                ["def", "foo",
                     ["@", ["a", "b"],
                         ["+", "a", "b"]
                     ]
                 ],
-                [["get", "foo"], 1, 2]
+                ["foo", 1, 2]
             ];
 
-            return it.eq(nisp(ast, env), 3);
+            return it.eq(nisp(ast, sandbox), 3);
         });
 
         it("multiple level without do", function () {
-            var env = {
-                "+": add
+            var sandbox = {
+                "+": langs.add
             };
 
             var ast = [["+", 1, ["+", 1, 1]]];
 
-            return it.eq(nisp(ast, env), [3]);
+            return it.eq(nisp(ast, sandbox), [3]);
         });
 
         it("custom if", function () {
-            var env = {
-                "+": add,
-                "?": stdFns.if
+            var sandbox = {
+                "+": langs.add,
+                "?": langs.if
             };
 
             var ast = ["?", ["+", 0, ["+", 1, 0]], 1, 2];
 
-            return it.eq(nisp(ast, env), 1);
+            return it.eq(nisp(ast, sandbox), 1);
         });
 
         it("custom fn", function () {
-            var env = {
-                "do": stdFns.do,
-                "+": add,
-                "get": stdFns.get,
-                "set": stdFns.set,
-                "@": stdFns.fn
+            var sandbox = {
+                "do": langs.do,
+                "+": langs.add,
+                "def": langs.def,
+                "@": langs.fn
             };
 
             var ast = ["do",
-                ["set", "foo",
+                ["def", "foo",
                     ["@", ["a", "b"],
-                        ["set", "c", 1],
-                        ["+", "a", "b", ["get", "c"]]
+                        ["def", "c", 1],
+                        ["+", "a", "b", "c"]
                     ]
                 ],
-                [["get", "foo"], 1, ["+", 1, 1]]
+                ["foo", 1, ["+", 1, 1]]
             ];
 
-            return it.eq(nisp(ast, env), 4);
+            return it.eq(nisp(ast, sandbox), 4);
         });
 
-        it("lazyFn", function () {
-            var env = {
-                "+": lazyFn(function (args) {
+        it("fns.args", function () {
+            var sandbox = {
+                "+": fns.args(function (args) {
                     return args(0) + args(1);
                 })
             };
 
             var ast = ["+", 1, 1];
 
-            return it.eq(nisp(ast, env), 2);
+            return it.eq(nisp(ast, sandbox), 2);
         });
 
         it("fn as arg", function () {
-            var env = {
-                "foo": function () {
+            var sandbox = {
+                foo: function () {
                     return 1;
                 },
 
-                "map": plainFn(function (a, b) {
+                map: fns.plain(function (a, b) {
                     return a() + b();
                 })
             };
 
             var ast = ["map", "foo", "foo"];
 
-            return it.eq(nisp(ast, env), 2);
+            return it.eq(nisp(ast, sandbox), 2);
         });
 
-        it("plainAsyncFn", function () {
-            var env = {
-                "get": plainAsyncFn(function (val) {
+        it("fns.plainAsync", function () {
+            var sandbox = {
+                "get": fns.plainAsync(function (val) {
                     return yutils.sleep(13, val);
                 }, Promise),
-                "+": plainAsyncFn(function (a, b) {
+                "+": fns.plainAsync(function (a, b) {
                     return yutils.sleep(13).then(function () {
                         return a + b;
                     });
@@ -164,28 +161,7 @@ module.exports = function (it) {
 
             var ast = ["+", ["get", 1], ["get", 2]];
 
-            return it.eq(nisp(ast, env), 3);
-        });
-    });
-
-    it.describe("extra", function (it) {
-        it("encode object", function () {
-            it.eq(
-                extraFns.encode(["test", 10]),
-                {
-                    tag: "__test__10_",
-                    json: "[\"test\",10]"
-                }
-            );
-        });
-        it("encode string", function () {
-            it.eq(
-                extraFns.encode("[\"test\", 10]"),
-                {
-                    tag: "__test___10_",
-                    json: "[\"test\", 10]"
-                }
-            );
+            return it.eq(nisp(ast, sandbox), 3);
         });
     });
 };

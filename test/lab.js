@@ -12,13 +12,16 @@ function waitNumber (val) {
 };
 
 var env = {
-    "download": plainAsyncFn(function () {
-        return waitNumber(1);
-    }),
+    sandbox: {
+        "download": function (ast, env, run) {
+            env.session
+            return waitNumber(1);
+        },
 
-    "+": plainAsyncFn(function (a, b) {
-        return a + b;
-    })
+        "+": plainAsyncFn(function (a, b) {
+            return a + b;
+        })
+    }
 };
 
 var expresses = ["+", ["download"], ["download"]];
