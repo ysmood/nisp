@@ -21,13 +21,7 @@ function run (ast, sandbox, env) {
             var fn = sandbox[action];
             return isFunction(fn) ? fn(run, ast, sandbox, env) : fn;
         } else {
-            var out = [];
-
-            for (var i = 0; i < ast.length; i++) {
-                out.push(run(ast[i], sandbox, env));
-            }
-
-            return out;
+            return ast;
         }
     } else {
         return ast in sandbox ? sandbox[ast] : ast;
@@ -47,10 +41,6 @@ module.exports = function (ast, sandbox, env) {
 
     return run(ast, sandbox, env);
 };
-
-function isString (obj) {
-    return typeof obj === "string";
-}
 
 function isArray (obj) {
     return typeof obj === "object" && obj !== null && typeof obj.length === "number";

@@ -100,16 +100,6 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox), [ 1, 2, null, [ 3 ] ]);
         });
 
-        it("multiple level without do", function () {
-            var sandbox = {
-                "+": langs.add
-            };
-
-            var ast = [["+", 1, ["+", 1, 1]]];
-
-            return it.eq(nisp(ast, sandbox), [3]);
-        });
-
         it("custom if", function () {
             var sandbox = {
                 "+": langs.add,
