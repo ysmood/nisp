@@ -15,8 +15,6 @@ function run (ast, sandbox, env) {
             return action(run, ast, sandbox, env);
         }
 
-        // If the current action is in the pre-defined env,
-        // else we try to eval each item.
         if (action in sandbox) {
             var fn = sandbox[action];
             return isFunction(fn) ? fn(run, ast, sandbox, env) : fn;
@@ -24,7 +22,7 @@ function run (ast, sandbox, env) {
             return ast;
         }
     } else {
-        return typeof ast === "string" ? sandbox[ast] : ast;
+        return ast;
     }
 }
 

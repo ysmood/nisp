@@ -69,15 +69,17 @@ nisp(expresses, sandbox); // => 6
 ```js
 var nisp = require("nisp");
 var plain = require("nisp/fn/plain");
+var args = require("nisp/fn/args");
 
 var sandbox = {
     concat: plain(function () {
         return Array.prototype.concat.apply([], arguments);
     }),
 
-    map: plain(function (args) {
-        var fn = args[0], arr = args[1];
-        return arr.map(fn);
+    map: args(function (arg) {
+        return arg(1).map(function (item) {
+            return arg(0, 'fn', item);
+        });
     }),
 
     getAnimals: plain(function (args, session) {
@@ -101,7 +103,7 @@ var session = {
     isZooKeeper: true
 }
 
-var expresses = ["map", "getUrl", ["concat", ["getAnimals"], ["getFruits"]]];
+var expresses = ["map", "getDetails", ["concat", ["getAnimals"], ["getFruits"]]];
 
 nisp(expresses, sandbox, session);
 ```

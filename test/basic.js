@@ -5,7 +5,6 @@ var yutils = require("yaku/lib/utils");
 var fns = {
     plain: require("../fn/plain"),
     plainSpread: require("../fn/plainSpread"),
-    plainTag: require("../fn/plainTag"),
     plainAsync: require("../fn/plainAsync"),
     args: require("../fn/args")
 };
@@ -33,7 +32,7 @@ module.exports = function (it) {
         });
 
         it("string", function () {
-            return it.eq(nisp("ok"), undefined);
+            return it.eq(nisp("ok"), "ok");
         });
 
         it("object", function () {
@@ -56,16 +55,6 @@ module.exports = function (it) {
             return it.eq(nisp(["p", [1, "ok"]], {
                 "p": langs.plain
             }), [1, "ok"]);
-        });
-
-        it("plain tag", function () {
-            var p = fns.plainTag("p");
-
-            // ES6: p`ok${1}`
-            // ES5: p([ "ok", "" ], 1)
-            return it.eq(nisp(p([ "ok", "" ], 1), {
-                "p": langs.plain
-            }), "ok1");
         });
 
         it("env", function () {
@@ -91,7 +80,7 @@ module.exports = function (it) {
             var ast = ["do",
                 ["def", "foo",
                     ["@", ["a", "b"],
-                        ["+", "a", "b"]
+                        ["+", ["a"], ["b"]]
                     ]
                 ],
                 ["foo", 1, 2]
@@ -134,7 +123,7 @@ module.exports = function (it) {
                 ["def", "foo",
                     ["@", ["a", "b"],
                         ["def", "c", 1],
-                        ["+", "a", "b", "c"]
+                        ["+", ["a"], ["b"], ["c"]]
                     ]
                 ],
                 ["foo", 1, ["+", 1, 1]]
@@ -169,18 +158,28 @@ module.exports = function (it) {
 
         it("fn as arg", function () {
             var sandbox = {
-                foo: function () {
-                    return 1;
-                },
+                foo: fns.plain(function (args) {
+                    return args[0] + 1;
+                }),
 
-                map: fns.plain(function (args) {
-                    return args[0]() + args[1]();
+                add: fns.args(function (args) {
+                    return args(0, "fn", 1) + args(1, "fn", 1);
                 })
             };
 
-            var ast = ["map", "foo", "foo"];
+            var ast = ["add", "foo", "foo"];
 
-            return it.eq(nisp(ast, sandbox), 2);
+            return it.eq(nisp(ast, sandbox), 4);
+        });
+
+        it("anonymous fn", function () {
+            var sandbox = {
+                fn: langs.fn
+            };
+
+            var ast = [["fn", ["a"], ["a"]], "ok"];
+
+            return it.eq(nisp(ast, sandbox), "ok");
         });
 
         it("fns.plainAsync", function () {

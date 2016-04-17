@@ -1,20 +1,17 @@
 /*eslint-disable */
 
 var nisp = require('../core');
-var plain = require('../fn/plain');
 
 
 var sandbox = {
     "def": require('../lang/def'),
+    "": require('../lang/plain'),
+    "fn": require('../lang/fn'),
+    "$": require('../lang/get'),
     "do": require('../lang/do'),
-    "`": require('../lang/plain'),
-    "+": plain(function (args) {
-        return args.reduce(function (s, n) { return s + n; });
-    })
+    a: 100
 };
 
-var expresses = ["do",
-    [1]
-];
+var expresses = ["b", 1]
 
 console.log(nisp(expresses, sandbox)); // => 20

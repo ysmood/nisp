@@ -1,4 +1,3 @@
-// ["fn", <arg1>, <arg2>, ...]
 module.exports = function (fn) {
     return function (run, args, sandbox, env) {
         var plainArgs = [], len = args.length;
@@ -7,6 +6,6 @@ module.exports = function (fn) {
             plainArgs[i - 1] = run(args[i], sandbox, env);
         }
 
-        return fn(plainArgs, env, sandbox, args);
+        return fn(plainArgs, args);
     };
 };
