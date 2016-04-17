@@ -24,7 +24,7 @@ function run (ast, sandbox, env) {
             return ast;
         }
     } else {
-        return ast in sandbox ? sandbox[ast] : ast;
+        return typeof ast === "string" ? sandbox[ast] : ast;
     }
 }
 

@@ -4,6 +4,8 @@ var yutils = require("yaku/lib/utils");
 
 var fns = {
     plain: require("../fn/plain"),
+    plainSpread: require("../fn/plainSpread"),
+    plainTag: require("../fn/plainTag"),
     plainAsync: require("../fn/plainAsync"),
     args: require("../fn/args")
 };
@@ -31,7 +33,7 @@ module.exports = function (it) {
         });
 
         it("string", function () {
-            return it.eq(nisp(["ok"]), ["ok"]);
+            return it.eq(nisp("ok"), undefined);
         });
 
         it("object", function () {
@@ -46,10 +48,24 @@ module.exports = function (it) {
             return it.eq(nisp([null]), [null]);
         });
 
-        it("plain fn", function () {
-            return it.eq(nisp(["`", [1, "ok"]], {
-                "`": langs.plain
+        it("array number", function () {
+            return it.eq(nisp([1, 2]), [1, 2]);
+        });
+
+        it("plain", function () {
+            return it.eq(nisp(["p", [1, "ok"]], {
+                "p": langs.plain
             }), [1, "ok"]);
+        });
+
+        it("plain tag", function () {
+            var p = fns.plainTag("p");
+
+            // ES6: p`ok${1}`
+            // ES5: p([ "ok", "" ], 1)
+            return it.eq(nisp(p([ "ok", "" ], 1), {
+                "p": langs.plain
+            }), "ok1");
         });
 
         it("env", function () {
@@ -62,12 +78,6 @@ module.exports = function (it) {
             var env = "ok";
 
             return it.eq(nisp(["env"], sandbox, env), "ok");
-        });
-
-        it("plain data", function () {
-            var ast = [1, 2];
-
-            return it.eq(nisp(ast), [1, 2]);
         });
 
         it("def", function () {
@@ -131,6 +141,18 @@ module.exports = function (it) {
             ];
 
             return it.eq(nisp(ast, sandbox), 4);
+        });
+
+        it("fns.plainSpread", function () {
+            var sandbox = {
+                "+": fns.plainSpread(function (a, b) {
+                    return a + b;
+                })
+            };
+
+            var ast = ["+", 1, 1];
+
+            return it.eq(nisp(ast, sandbox), 2);
         });
 
         it("fns.args", function () {
