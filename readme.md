@@ -37,12 +37,12 @@ var sandbox = {
     if: require("nisp/lang/if")
 };
 
-var expresses = ["do",
+var expressions = ["do",
     ["def", "a", ["if", false, 10, 20]],
     "a"
 ];
 
-nisp(expresses, sandbox); // => 20
+nisp(expressions, sandbox); // => 20
 ```
 
 ### Define your own function
@@ -59,9 +59,9 @@ var sandbox = {
     })
 };
 
-var expresses = ["+", 1, 2, 3];
+var expressions = ["+", 1, 2, 3];
 
-nisp(expresses, sandbox); // => 6
+nisp(expressions, sandbox); // => 6
 ```
 
 ### Composable RPC
@@ -103,9 +103,9 @@ var session = {
     isZooKeeper: true
 }
 
-var expresses = ["map", "getDetails", ["concat", ["getAnimals"], ["getFruits"]]];
+var expressions = ["map", "getDetails", ["concat", ["getAnimals"], ["getFruits"]]];
 
-nisp(expresses, sandbox, session);
+nisp(expressions, sandbox, session);
 ```
 
 ### Full control the ast
@@ -137,9 +137,9 @@ var sandbox = {
     })
 };
 
-var expresses = ["+", 1, 2];
+var expressions = ["+", 1, 2];
 
-nisp(expresses, sandbox); // => 3
+nisp(expressions, sandbox); // => 3
 ```
 
 ### Make a complete async language
@@ -168,9 +168,9 @@ var sandbox = {
 };
 
 // Here we can write async code a async way.
-var expresses = ["+", ["download"], ["download"]];
+var expressions = ["+", ["download"], ["download"]];
 
-nisp(expresses, sandbox).then(function (out) {
+nisp(expressions, sandbox).then(function (out) {
     console.log(out) // => 2
 });
 ```
