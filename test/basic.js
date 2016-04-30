@@ -6,6 +6,7 @@ var fns = {
     plain: require("../fn/plain"),
     plainSpread: require("../fn/plainSpread"),
     plainAsync: require("../fn/plainAsync"),
+    plainAsyncSpread: require("../fn/plainAsyncSpread"),
     args: require("../fn/args")
 };
 
@@ -190,6 +191,23 @@ module.exports = function (it) {
                 "+": fns.plainAsync(function (args) {
                     return yutils.sleep(13).then(function () {
                         return args[0] + args[1];
+                    });
+                }, Promise)
+            };
+
+            var ast = ["+", ["get", 1], ["get", 2]];
+
+            return it.eq(nisp(ast, sandbox, 1), 5);
+        });
+
+        it("fns.plainAsyncSpread", function () {
+            var sandbox = {
+                "get": fns.plainAsyncSpread(function (v) {
+                    return yutils.sleep(13, v + this.env);
+                }, Promise),
+                "+": fns.plainAsyncSpread(function (a, b) {
+                    return yutils.sleep(13).then(function () {
+                        return a + b;
                     });
                 }, Promise)
             };
