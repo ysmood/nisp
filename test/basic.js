@@ -16,7 +16,8 @@ var langs = {
     plain: require("../lang/plain"),
     def: require("../lang/def"),
     fn: require("../lang/fn"),
-    concat: require("../lang/concat"),
+    list: require("../lang/list"),
+    dict: require("../lang/dict"),
 
     add: fns.plain(function (args) {
         return args.reduce(function (s, v) {
@@ -90,14 +91,30 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox), 3);
         });
 
-        it("concat", function () {
+        it("list", function () {
             var sandbox = {
-                concat: langs.concat
+                "list": langs.list,
+                "+": langs.add
             };
 
-            var ast = ["concat", 1, [2], null, [[3]]];
+            var ast = ["list", 1, ["+", 1, 1], 3];
 
-            return it.eq(nisp(ast, sandbox), [ 1, 2, null, [ 3 ] ]);
+            return it.eq(nisp(ast, sandbox), [1, 2, 3]);
+        });
+
+        it("dict", function () {
+            var sandbox = {
+                "dict": langs.dict,
+                "+": langs.add
+            };
+
+            var ast = ["dict",
+                "a", 1,
+                "b", ["+", 1, 1],
+                "c", 3
+            ];
+
+            return it.eq(nisp(ast, sandbox), { a: 1, b: 2, c: 3 });
         });
 
         it("custom if", function () {
