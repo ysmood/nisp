@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "A language that for easily build cross-language language",
   "main": "core/index.js",
   "scripts": {
@@ -9,7 +9,9 @@
     "prepublish": "no build"
   },
   "files": [
-    "core", "fn", "lang"
+    "core",
+    "fn",
+    "lang"
   ],
   "repository": {
     "type": "git",
@@ -25,10 +27,10 @@
   },
   "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
-    "eslint": "2.7.0",
-    "junit": "1.3.2",
-    "nokit": "0.20.6",
-    "yaku": "0.15.1"
+    "eslint": "3.4.0",
+    "junit": "1.4.4",
+    "nokit": "0.22.28",
+    "yaku": "0.16.6"
   },
   "eslintConfig": {
     "rules": {
