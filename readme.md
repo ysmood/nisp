@@ -3,16 +3,17 @@
 [![NPM version](https://badge.fury.io/js/nisp.svg)](http://badge.fury.io/js/nisp) [![Build Status](https://travis-ci.org/ysmood/nisp.svg)](https://travis-ci.org/ysmood/nisp) [![Deps Up to Date](https://david-dm.org/ysmood/nisp.svg?style=flat)](https://david-dm.org/ysmood/nisp)
 
 
-The interesting part is that it is designed to be non-turing-complete.
+The interesting part is that nisp is designed to be non-turing-complete.
 
-You have the full control of the vm, you can decide what the language can have, for example,
-if you don't expose the `if` expression, the user cannot directly express if logic.
+You have the full control of the vm and ast,
+you can decide what the language will have, or how lazy the expression will be.
+for example, if you don't expose the `if` expression, the user can never express if logic.
 
-By default the language only presents the meta data of the program itself. So by default
+By default nisp only presents the meta data of the program itself. So by default
 it is used to exchange plain data.
 
-You may ask what it does? Yes it does nothing. And that is exactly what a composable permission
-protocol need. We use it to expose composable api.
+You may ask what it really does? Yes, it does nothing. And that is exactly what a composable permission
+protocol needs. I use it to expose composable api.
 
 The ast of nisp is plain JSON, the js implementation is only 35 lines of code, so it will be very to port nisp to other languages. No closure or complex data type is required, even plain C can implement nisp easily.
 
@@ -26,7 +27,7 @@ For more examples, read the unit test of this project.
 
 ### Use the predefined functions
 
-Only if the `$` function is defined, the user can define variable.
+Only if the `$` function is defined, can the user define variable.
 
 ```js
 var nisp = require("nisp");
@@ -120,7 +121,7 @@ var plain = require("nisp/fn/plain");
 
 var sandbox = {
     // Full lazy.
-    "if": args(function (v) {
+    if: args(function (v) {
         return v(0) ? v(1) : v(2);
     }),
 
@@ -130,16 +131,27 @@ var sandbox = {
     })
 
     // Even half lazy, you have the full control to how lazy the program will be.
-    // No matter v(0) is true or false, the v(1) will be calculated.
+    // No matter v(0) is true or false, v(1) will be calculated.
     "half-lazy-if": args(function (v) {
         var v1 = v(1);
         return v(0) ? v1 : v(2);
+    }),
+
+    do: require("nisp/lang/do"),
+
+    "+": plain(function (args) {
+        console.log('calc:', args);
+        return args.reduce(function (s, n) { return s + n; });
     })
 };
 
-var expressions = ["+", 1, 2];
+var expressions = ["do",
+    ["if"          , true, ["+", 1 1], ["+", 2, 2]],
+    ["non-lazy-if" , true, ["+", 1 1], ["+", 2, 2]],
+    ["half-lazy-if", true, ["+", 1 1], ["+", 2, 2]]
+];
 
-nisp(expressions, sandbox); // => 3
+nisp(expressions, sandbox);
 ```
 
 ### Make a complete async language
@@ -167,10 +179,11 @@ var sandbox = {
     })
 };
 
-// Here we can write async code a async way.
+// Here we can write async code a sync way.
 var expressions = ["+", ["download"], ["download"]];
 
 nisp(expressions, sandbox).then(function (out) {
+    // It will take about 1 seconds to log out.
     console.log(out) // => 2
 });
 ```
