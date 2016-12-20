@@ -5,8 +5,8 @@
  * @return {Any} The computed value.
  */
 function run (ast, sandbox, env) {
-    if (!env) throw new TypeError("env is required");
-    if (!sandbox) throw new TypeError("sandbox is required");
+    if (!env) throw new TypeError("nisp env is required");
+    if (!sandbox) throw new TypeError("nisp sandbox is required");
 
     if (isArray(ast)) {
         var action = run(ast[0], sandbox, env);
@@ -19,7 +19,7 @@ function run (ast, sandbox, env) {
             var fn = sandbox[action];
             return isFunction(fn) ? fn(run, ast, sandbox, env) : fn;
         } else {
-            return ast;
+            throw new TypeError("nisp '" + action + "' is undefined, ast: " + JSON.stringify(ast));
         }
     } else {
         return ast;

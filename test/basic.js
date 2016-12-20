@@ -45,12 +45,13 @@ module.exports = function (it) {
             return it.eq(nisp(null), null);
         });
 
-        it("null array", function () {
-            return it.eq(nisp([null]), [null]);
-        });
-
-        it("array number", function () {
-            return it.eq(nisp([1, 2]), [1, 2]);
+        it("symbol undefined", function () {
+            try {
+                nisp([1, 2]);
+                throw new Error("should throw error");
+            } catch (err) {
+                return it.eq(err.message, "nisp '1' is undefined, ast: [1,2]");
+            }
         });
 
         it("plain", function () {
