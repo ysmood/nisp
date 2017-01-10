@@ -234,5 +234,64 @@ module.exports = function (it) {
 
             return it.eq(nisp(ast, sandbox, 1), 5);
         });
+
+
+        it("new", function () {
+            var sandbox = {
+                "+": fns.plain(function (args) {
+                    return args.reduce((a, b) => a + b, 0);
+                }),
+                "get": fns.plainSpread(function (a, b) {
+                    return a[b];
+                })
+            };
+
+            var json = { a : 1 };
+
+            var tpl = nisp.new`
+            (
+                +
+                (
+                    get ${json} ${'a'}
+                )
+                2
+            )
+            `;
+
+            return it.eq(tpl(sandbox), 3);
+        });
+
+        it("new error", function () {
+            var sandbox = {
+                "+": fns.plain(function (args) {
+                    return args.reduce((a, b) => a + b, 0);
+                }),
+                "get": fns.plainSpread(function (a, b) {
+                    return a[b];
+                })
+            };
+
+            var json = { a : 1 };
+
+            var tpl = nisp.new`
+            (
+                +
+                (
+                    get ${json} ${'a'}
+                
+                2
+            )
+            `;
+
+            try {
+                it.eq(tpl(sandbox), 3);
+            } catch (err) {
+                return it.eq(err.message, `
+                    Expected "(", ")", "[", "false", "null", "true", "{", number, or string but end of input found.
+                `.trim());
+            }
+
+            throw new Error()
+        });
     });
 };

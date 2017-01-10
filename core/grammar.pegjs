@@ -1,20 +1,22 @@
 {
-  function reference(name) {
-    return 'fn:' + name;
+  function sandbox(name) {
+    return options.sandbox[name];
   }
 }
 
 nisp
-  = '(' ws call:call ws ')' { return call }
-  / '(' ws ')' { return undefined }
+  = ws '(' ws call:call ws ')' ws { return call }
+  / ws '(' ws ')' ws { return undefined }
 
 call
-  = ref:ref ws args:arguments { return [ref, args] }
-  / ref:ref { return [ref] }
+  = ref:ref ws args:arguments { return [sandbox(ref)].concat(args) }
+  / ref:ref { return [sandbox(ref)] }
   
 ref
-  = "(" call ")"
+  = "(" ws call:call ws ")" { return call }
   / identifier
+  / string
+  / stringx
 
 arguments
   = left:data ws right:arguments { return [left].concat(right) }
@@ -22,10 +24,10 @@ arguments
 
 data
   = value
-  / "(" call ")"
+  / "(" ws call:call ws ")" { return call }
 
 identifier "id"
-  = [$_a-zA-Z][$_a-zA-Z0-9]* { return text() }
+  = [^()'" \t\n\r]+ { return text() }
 
 begin_array     = ws "[" ws
 begin_object    = ws "{" ws
@@ -122,8 +124,29 @@ zero
 
 // ----- 7. Strings -----
 
+stringx "stringx"
+  = quotation_markx chars:charx* quotation_markx { return chars.join(""); }
+
 string "string"
   = quotation_mark chars:char* quotation_mark { return chars.join(""); }
+  
+charx
+  = unescapedx
+  / escape
+    sequence:(
+        "'"
+      / "\\"
+      / "/"
+      / "b" { return "\b"; }
+      / "f" { return "\f"; }
+      / "n" { return "\n"; }
+      / "r" { return "\r"; }
+      / "t" { return "\t"; }
+      / "u" digits:$(HEXDIG HEXDIG HEXDIG HEXDIG) {
+          return String.fromCharCode(parseInt(digits, 16));
+        }
+    )
+    { return sequence; }
 
 char
   = unescaped
@@ -146,11 +169,17 @@ char
 escape
   = "\\"
 
+quotation_markx
+  = "'"
+  
 quotation_mark
   = '"'
 
 unescaped
   = [^\0-\x1F\x22\x5C]
+  
+unescapedx
+  = [^\0-\x1F\x27\x5C]
 
 // ----- Core ABNF Rules -----
 
