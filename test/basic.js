@@ -239,7 +239,7 @@ module.exports = function (it) {
         it("new", function () {
             var sandbox = {
                 "+": fns.plain(function (args) {
-                    return args.reduce((a, b) => a + b, 0);
+                    return args.reduce(function (a, b) { return a + b; }, 0);
                 }),
                 "get": fns.plainSpread(function (a, b) {
                     return a[b];
@@ -248,24 +248,17 @@ module.exports = function (it) {
 
             var json = { a : 1 };
 
-            var tpl = nisp.new`
-            (
-                +
-                (
-                    get ${json} ${'a'}
-                )
-                2
-                ${Buffer.from('str')}
-            )
-            `;
+            var tpl = nisp.new([
+                "(+ (get ", " ", " 2 ", ")"
+            ], json, "a", Buffer.from("str"));
 
-            return it.eq(tpl(sandbox), '3str');
+            return it.eq(tpl(sandbox), "3str");
         });
 
         it("new error", function () {
             var sandbox = {
                 "+": fns.plain(function (args) {
-                    return args.reduce((a, b) => a + b, 0);
+                    return args.reduce(function (a, b) { return a + b; }, 0);
                 }),
                 "get": fns.plainSpread(function (a, b) {
                     return a[b];
@@ -274,24 +267,17 @@ module.exports = function (it) {
 
             var json = { a : 1 };
 
-            var tpl = nisp.new`
-            (
-                +
-                (
-                    get ${json} ${'a'}
-                2
-            )
-            `;
+            var tpl = nisp.new([
+                "(+ (get ", " ", " 2)"
+            ], json, "a");
 
             try {
                 it.eq(tpl(sandbox), 3);
             } catch (err) {
-                return it.eq(err.message, `
-                    Expected "(", ")", "[", "false", "null", "true", "{", binary, number, or string but end of input found.
-                `.trim());
+                return it.eq(err.message, "Expected \"(\", \")\", \"[\", \"false\", \"null\", \"true\", \"{\", binary, number, or string but end of input found.");
             }
 
-            throw new Error()
+            throw new Error();
         });
     });
 };

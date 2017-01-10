@@ -1,3 +1,5 @@
+/*eslint-disable */
+
 var nisp = require("../core");
 var Promise = require("yaku");
 var yutils = require("yaku/lib/utils");
@@ -28,9 +30,9 @@ var langs = {
     })
 };
 
-var tpl = nisp.new`
-    ( add 1 ${Buffer.from('str')} )
-`;
+// var tpl = nisp.new`
+//     ( add 1 ${Buffer.from('str')} )
+// `;
 
 
-console.log(tpl(langs))
+// console.log(tpl(langs))
