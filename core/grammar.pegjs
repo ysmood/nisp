@@ -1,6 +1,12 @@
+// https://pegjs.org/online
+
 {
   function sandbox(name) {
-    return options.sandbox[name];
+    return options.sandbox[name]
+  }
+  
+  function decode(value) {
+    return options.decode(value)
   }
 }
 
@@ -21,6 +27,7 @@ ref
 arguments
   = left:data ws right:arguments { return [left].concat(right) }
   / data:data { return [data] }
+  / binary:binary { return [binary] }
 
 data
   = value
@@ -28,6 +35,9 @@ data
 
 identifier "id"
   = [^()'" \t\n\r]+ { return text() }
+  
+binary "binary"
+  = [\x60][^\x60]*[\x60] { return decode(text().slice(1, -1)) }
 
 begin_array     = ws "[" ws
 begin_object    = ws "{" ws

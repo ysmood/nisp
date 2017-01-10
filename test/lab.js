@@ -29,7 +29,7 @@ var langs = {
 };
 
 var tpl = nisp.new`
-    ( add 1 2 3 ( add 1 2 ) 5 ${6} )
+    ( add 1 ${Buffer.from('str')} )
 `;
 
 
