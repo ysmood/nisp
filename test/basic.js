@@ -255,10 +255,11 @@ module.exports = function (it) {
                     get ${json} ${'a'}
                 )
                 2
+                ${Buffer.from('str')}
             )
             `;
 
-            return it.eq(tpl(sandbox), 3);
+            return it.eq(tpl(sandbox), '3str');
         });
 
         it("new error", function () {
@@ -278,7 +279,6 @@ module.exports = function (it) {
                 +
                 (
                     get ${json} ${'a'}
-                
                 2
             )
             `;
@@ -287,7 +287,7 @@ module.exports = function (it) {
                 it.eq(tpl(sandbox), 3);
             } catch (err) {
                 return it.eq(err.message, `
-                    Expected "(", ")", "[", "false", "null", "true", "{", number, or string but end of input found.
+                    Expected "(", ")", "[", "false", "null", "true", "{", binary, number, or string but end of input found.
                 `.trim());
             }
 
