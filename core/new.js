@@ -34,7 +34,7 @@ module.exports = (literals, ...placeHolder) => {
             }
             str.push(literals[i])
         }
-        var ast = parser.parse(str.join(''), { sandbox, decode : options.decode });
+        var ast = parser.parse(str.join(''), { sandbox: sandbox, decode : options.decode });
         return run(ast, sandbox, env);
     }
 }
