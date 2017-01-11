@@ -1,40 +1,40 @@
-var parser = require('./parser')
-var run = require('./run');
+var parser = require("./parser");
+var run = require("./run");
 
-var reduce = (left, right) => {
-    return left + JSON.stringify(placeHolder[index ++]) + right;
+var encode = function (value) {
+    return (typeof Buffer === "undefined") ? btoa(value) : value.toString("base64");
 };
 
-var encode = (value) => {
-    return (typeof Buffer === 'undefined') ? btoa(value) : value.toString('base64')
-}
+var decode = function (value) {
+    return (typeof Buffer === "undefined") ? atob(value) : Buffer.from(value, "base64");
+};
 
-var decode = (value) => {
-    return (typeof Buffer === 'undefined') ? atob(value) : Buffer.from(value, 'base64')
-}
+var isBuffer = function (obj) {
+    return (typeof Buffer !== "undefined") && Buffer.isBuffer(obj);
+};
 
-var isBuffer = (obj) => {
-    return (typeof Buffer !== 'undefined') && Buffer.isBuffer(obj);
-}
+var slice = Array.prototype.slice;
 
-module.exports = (literals, ...placeHolder) => {
-    return (sandbox, env, options) => {
+module.exports = function () {
+    var literals = arguments[0];
+    var placeHolder = slice.call(arguments, 1);
+
+    return function (sandbox, env, options) {
         options = options || {};
         options.encode = options.encode || encode;
         options.decode = options.decode || decode;
 
-        var index = 0;
         var str = [literals[0]];
         for (var i = 1 ; i < literals.length ; ++ i) {
             var val = placeHolder[i - 1];
             if (isBuffer(val)) {
-                str.push('`' + options.encode(val) + '`')
+                str.push("`" + options.encode(val) + "`");
             } else {
-                str.push(JSON.stringify(val))
+                str.push(JSON.stringify(val));
             }
-            str.push(literals[i])
+            str.push(literals[i]);
         }
-        var ast = parser.parse(str.join(''), { sandbox: sandbox, decode : options.decode });
+        var ast = parser.parse(str.join(""), { sandbox: sandbox, decode : options.decode });
         return run(ast, sandbox, env);
-    }
-}
+    };
+};
