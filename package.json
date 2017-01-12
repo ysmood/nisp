@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "A language that for easily build cross-language language",
   "main": "core/index.js",
   "scripts": {
