@@ -7,6 +7,9 @@ var encode = function (value) {
 };
 
 var slice = Array.prototype.slice;
+var isArray = function (target) {
+    return Object.prototype.toString.call(target).slice(8, -1) === "Array";
+};
 
 module.exports = function () {
     var literals = arguments[0];
@@ -16,7 +19,7 @@ module.exports = function () {
         var val = placeHolder[i - 1];
         if (isBuffer(val)) {
             str.push("`" + encode(val) + "`");
-         } else if (Array.isArray(val)) {
+        } else if (isArray(val)) {
             str.push("(plain " + JSON.stringify(val) + ")");
         } else {
             str.push(JSON.stringify(val));
