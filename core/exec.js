@@ -1,6 +1,6 @@
 var parser = require("./parser");
 var run = require("./run");
-var plain = require("../lang/plain")
+var plain = require("../lang/plain");
 
 var decode = function (value) {
     return (typeof Buffer === "undefined") ? atob(value) : Buffer.from(value, "base64");
