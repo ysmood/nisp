@@ -16,6 +16,8 @@ module.exports = function () {
         var val = placeHolder[i - 1];
         if (isBuffer(val)) {
             str.push("`" + encode(val) + "`");
+         } else if (Array.isArray(val)) {
+            str.push("(plain " + JSON.stringify(val) + ")");
         } else {
             str.push(JSON.stringify(val));
         }

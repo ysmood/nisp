@@ -1,5 +1,5 @@
-// https://pegjs.org/online
-
+//Nisp Grammar
+//[1] https://github.com/pegjs/pegjs/blob/master/examples/json.pegjs
 {
   function sandbox(name) {
     return options.sandbox[name]
@@ -27,10 +27,10 @@ ref
 arguments
   = left:data ws right:arguments { return [left].concat(right) }
   / data:data { return [data] }
-  / binary:binary { return [binary] }
 
 data
   = value
+  / binary
   / "(" ws call:call ws ")" { return call }
 
 identifier "id"
