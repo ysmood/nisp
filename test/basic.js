@@ -236,7 +236,7 @@ module.exports = function (it) {
         });
 
 
-        it("new", function () {
+        it("grammar", function () {
             var sandbox = {
                 "+": fns.plain(function (args) {
                     return args.reduce(function (a, b) { return a + b; }, 0);
@@ -248,14 +248,14 @@ module.exports = function (it) {
 
             var json = { a : 1 };
 
-            var tpl = nisp.new([
-                "(+ (get ", " ", ") 2 ", ")"
-            ], json, "a", Buffer.from("str"));
+            var code = nisp.encode([
+                "(+ (get ", " ", ") 2 ", " ", ")"
+            ], json, "a", Buffer.from("str"), [0]);
 
-            return it.eq(tpl(sandbox), "3str");
+            return it.eq(nisp.exec(code, sandbox), "3str0");
         });
 
-        it("new error", function () {
+        it("grammar error", function () {
             var sandbox = {
                 "+": fns.plain(function (args) {
                     return args.reduce(function (a, b) { return a + b; }, 0);
@@ -267,12 +267,12 @@ module.exports = function (it) {
 
             var json = { a : 1 };
 
-            var tpl = nisp.new([
-                "(+ (get ", " ", " 2 ", ")"
-            ], json, "a", [0]);
+            var code = nisp.encode([
+                "(+ (get ", " ", " 2)"
+            ], json, "a");
 
             try {
-                it.eq(tpl(sandbox), 3);
+                it.eq(nisp.exec(code, sandbox), 3);
             } catch (err) {
                 return it.eq(err.message, "Expected \"(\", \")\", \"[\", \"false\", \"null\", \"true\", \"{\", binary, number, or string but end of input found.");
             }
