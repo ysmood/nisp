@@ -268,8 +268,8 @@ module.exports = function (it) {
             var json = { a : 1 };
 
             var tpl = nisp.new([
-                "(+ (get ", " ", " 2)"
-            ], json, "a");
+                "(+ (get ", " ", " 2 ", ")"
+            ], json, "a", [0]);
 
             try {
                 it.eq(tpl(sandbox), 3);

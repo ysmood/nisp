@@ -23,12 +23,15 @@ module.exports = function () {
         options = options || {};
         options.encode = options.encode || encode;
         options.decode = options.decode || decode;
+        sandbox.plain = require("../lang/plain");
 
         var str = [literals[0]];
         for (var i = 1 ; i < literals.length ; ++ i) {
             var val = placeHolder[i - 1];
             if (isBuffer(val)) {
                 str.push("`" + options.encode(val) + "`");
+            } else if (Array.isArray(val)) {
+                str.push("(plain " + JSON.stringify(val) + ")");
             } else {
                 str.push(JSON.stringify(val));
             }
