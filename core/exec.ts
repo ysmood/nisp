@@ -1,12 +1,20 @@
-var run = require("./run");
+import * as parser from "./parser.js";
+import run from "./run";
 
-function decode (value) {
-    return (typeof Buffer === "undefined") ? atob(value) : Buffer.from(value, "base64");
-};
+function atob (str) {
+    return (typeof Buffer === "undefined") ? atob(str) : Buffer.from(str, "base64");
+}
+
+function json (str) {
+    return JSON.parse(str)
+}
 
 export default function (code, sandbox, env?) {
-    if (!sandbox.decode) {
-        sandbox.decode = decode;
+    if (!sandbox.atob) {
+        sandbox.atob = atob;
+    }
+    if (!sandbox.json) {
+        sandbox.json = json;
     }
 
     return run(code, sandbox, env);

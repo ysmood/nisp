@@ -28,48 +28,10 @@
   "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
     "@types/node": "^7.0.0",
-    "eslint": "3.13.1",
     "junit": "1.4.8",
     "nokit": "0.23.18",
     "pegjs": "^0.10.0",
     "typescript": "^2.1.5",
     "yaku": "0.17.8"
-  },
-  "eslintConfig": {
-    "rules": {
-      "indent": [
-        2,
-        4
-      ],
-      "quotes": [
-        2,
-        "double"
-      ],
-      "linebreak-style": [
-        2,
-        "unix"
-      ],
-      "semi": [
-        2,
-        "always"
-      ],
-      "no-trailing-spaces": 2,
-      "space-before-function-paren": [
-        2,
-        "always"
-      ],
-      "eqeqeq": [
-        2,
-        "allow-null"
-      ],
-      "no-console": [
-        0
-      ]
-    },
-    "env": {
-      "browser": true,
-      "node": true
-    },
-    "extends": "eslint:recommended"
   }
 }

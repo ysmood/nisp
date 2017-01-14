@@ -10,38 +10,25 @@
  * )
  */
 
-{
-	function str (chars) {
-    	var ret = '', len = chars.length
-        for (var i = 0; i < len; i++) {
-        	ret += chars[i]
-        }
-        return ret
-    }
-}
-
 start
 	= nisp / _
 
 nisp
-	= _ '(' _ fn:fn _ subs:(nisp / data)* _ ')' _
-    {
-    	subs.unshift(fn);
-        return subs
-    }
+	= _ '(' _ exp:(val / nisp)* _ ')' _ { return exp }
 
-fn
-	= $[a-zA-Z0-9_+\-*/]+
+val
+	= 'true' _ { return true }
+    / 'false' _ { return false }
+    / 'null' _ { return null }
+    / $[0-9]+ _ { return +text() }
+    / str:$[^' \t\r\n()]+ _ { return str }
+	/ quote str:$char* quote _  { return str }
 
-data
-	= _ data_quote chars:data_char* data_quote
-	{ return str(chars) }
-
-data_char
+char
     = "''" { return "'" }
     / [^']
 
-data_quote
+quote
 	= "'"
 
 _
@@ -51,4 +38,4 @@ comment
 	= '#' [^\r\n]*
 
 ws "whitespace"
-	= $[ \t\n\r]*
+	= [ \t\r\n]*

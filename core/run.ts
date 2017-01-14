@@ -1,39 +1,69 @@
 import { isArray, isFunction } from './utils'
 
+export interface Sandbox {
+    macros?: {
+        [name: string]: Function
+    }
+    [name: string]: any
+}
+
+interface Env {
+    sandbox?: Sandbox
+    run?: typeof run
+}
+
+function apply (fn, ast, env) {
+    var plainArgs = [], len = ast.length;
+
+    for (var i = 1; i < len; i++) {
+        plainArgs[i - 1] = env.run(ast[i], env);
+    }
+
+    return fn.apply(env, plainArgs);
+}
+
 /**
  * Eval a expression with specific env.
  * @param  {Array} ast The ast of the program.
  * @param  {Object} env key/value object.
  * @return {Any} The computed value.
  */
-function run (ast, sandbox: Sandbox, env: {}) {
+function run (ast, env: Env) {
     if (!env) throw new TypeError("nisp env is required");
-    if (!sandbox) throw new TypeError("nisp sandbox is required");
+    if (!env.run) throw new TypeError("nisp env.run is required");
+
+    var sandbox = env.sandbox
+    if (!sandbox) throw new TypeError("nisp env.sandbox is required");
 
     if (isArray(ast)) {
+        var macros = sandbox.macros
+        var action = ast[0]
+        var fn
+
         // handle raw data, this is the only builtin function
-        if (ast[0] === "$")
+        if (action === "$")
             return ast[1];
 
-        var action = run(ast[0], sandbox, env);
-
         if (isFunction(action)) {
-            return action(run, ast, sandbox, env);
+            return apply(action, ast, env)
         }
 
         if (action in sandbox) {
-            var fn = sandbox[action];
-            return isFunction(fn) ? fn(run, ast, sandbox, env) : fn;
+            fn = sandbox[action];
+            return isFunction(fn) ? apply(fn, ast, env) : fn;
+        } else if (macros && action in macros) {
+            fn = macros[action]
+            if (isFunction(fn)) {
+                return fn(ast, env)
+            } else {
+                throw new TypeError(`nisp function ${action} is undefined, ast: ${JSON.stringify(ast)}`);
+            }
         } else {
-            throw new TypeError("nisp '" + action + "' is undefined, ast: " + JSON.stringify(ast));
+                throw new TypeError(`nisp macro ${action} is undefined, ast: ${JSON.stringify(ast)}`);
         }
     } else {
         return ast;
     }
-}
-
-export interface Sandbox {
-    [name: string]: Function
 }
 
 /**
@@ -41,9 +71,12 @@ export interface Sandbox {
  * @param {any} ast A freezed world, pure and simple.
  * @param {Sandbox} sandbox The interface that directly connects to the real world.
  * It defined how to tranform the freezed world into the real world
- * @param {Object} env The system space of the vm
- * @return {Any}
+ * @param {Env} env The system space of the vm
+ * @return {any}
  */
-export default function (ast, sandbox: Sandbox, env = {}) {
-    return run(ast, sandbox, env);
+export default function (ast, sandbox: Sandbox, env: Env = {}) {
+    env.run = run
+    env.sandbox = sandbox
+
+    return run(ast, env);
 };

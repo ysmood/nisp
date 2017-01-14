@@ -1,7 +1,8 @@
+let root = typeof window === 'object' ? window : global
 
 // ["fn", <arg1>, <arg2>, ...]
 export default function (fn, customPromise) {
-    var P = customPromise || Promise; // eslint-disable-line
+    var P = customPromise || root['Promise']; // eslint-disable-line
 
     return function (run, args, sandbox, env) {
         var plainArgs = [], len = args.length;
