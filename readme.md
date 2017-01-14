@@ -6,8 +6,8 @@
 The interesting part is that nisp is designed to be non-turing-complete.
 
 You have the full control of the vm and ast,
-you can decide what the language will have, or how lazy the expression will be.
-for example, if you don't expose the `if` expression, the user can never express if logic.
+you can decide what the language will have, or how lazy the expwill be.
+for example, if you don't expose the `if` exp the user can never express if logic.
 
 By default nisp only presents the meta data of the program itself. So by default
 it is used to exchange plain data.
@@ -25,6 +25,49 @@ nisp is an ideal middle layer to carry query or RPC.
 For more examples, read the unit test of this project.
 
 
+### Define your own function
+
+Here the user can only use it as a sum-only-calculator.
+
+```js
+var nisp = require("nisp");
+var p = require("nisp/fn/plain");
+
+var sandbox = {
+    "+": p(arr => arr.reduce((a, b) => a + b))
+};
+
+var exp = ["+", 1, 2, 3];
+
+nisp(exp, sandbox); // => 6
+```
+
+
+### Encode and escape data
+
+Sometimes you may want to separate nisp code and raw data,
+Here we provide `nisp.encode` to simplify the pain of typing
+quotes and commas. The grammar is almost the same with lisp.
+
+```js
+var nisp = require("nisp");
+var p = require("nisp/fn/plainSpread");
+
+var sandbox = {
+    raw: raw,
+    "+": p(arr => arr.reduce((a, b) => a + b)),
+    "++": p(arr => arr.map(a => a + 1))
+};
+
+var data = [1, 2, 3]
+
+var exp = nisp.encode`(+ (++ ${data}))`
+// exp <= ["+", ["++", ["$", ["1", "2", "3"]]]]
+
+nisp.exec(exp, sandbox); // => 9
+```
+
+
 ### Use the predefined functions
 
 Only if the `$` function is defined, can the user define variable.
@@ -38,32 +81,14 @@ var sandbox = {
     if: require("nisp/lang/if")
 };
 
-var expressions = ["do",
+var exp = ["do",
     ["def", "a", ["if", false, 10, 20]],
     "a"
 ];
 
-nisp(expressions, sandbox); // => 20
+nisp(exp, sandbox); // => 20
 ```
 
-### Define your own function
-
-Here the user can only use it as a sum-only-calculator.
-
-```js
-var nisp = require("nisp");
-var plain = require("nisp/fn/plain");
-
-var sandbox = {
-    "+": plain(function (args) {
-        return args.reduce(function (s, n) { return s + n; });
-    })
-};
-
-var expressions = ["+", 1, 2, 3];
-
-nisp(expressions, sandbox); // => 6
-```
 
 ### Composable RPC
 
@@ -104,14 +129,14 @@ var session = {
     isZooKeeper: true
 }
 
-var expressions = ["map", "getDetails", ["concat", ["getAnimals"], ["getFruits"]]];
+var exp = ["map", "getDetails", ["concat", ["getAnimals"], ["getFruits"]]];
 
-nisp(expressions, sandbox, session);
+nisp(exp, sandbox, session);
 ```
 
 ### Full control the ast
 
-Here we implementation a `if` expression. The `if` expression is very special,
+Here we implementation a `if` exp The `if` expis very special,
 it cannot be achieved without ast manipulation.
 
 ```js
@@ -145,13 +170,13 @@ var sandbox = {
     })
 };
 
-var expressions = ["do",
-    ["if"          , true, ["+", 1 1], ["+", 2, 2]],
-    ["non-lazy-if" , true, ["+", 1 1], ["+", 2, 2]],
-    ["half-lazy-if", true, ["+", 1 1], ["+", 2, 2]]
-];
+var exp = nisp.encode`(do
+    (if           true (+ 1 1) (+ 2 2))
+    (non-lazy-if  true (+ 1 1) (+ 2 2))
+    (half-lazy-if true (+ 1 1) (+ 2 2))
+)`;
 
-nisp(expressions, sandbox);
+nisp.exec(exp, sandbox);
 ```
 
 ### Make a complete async language
@@ -180,9 +205,9 @@ var sandbox = {
 };
 
 // Here we can write async code a sync way.
-var expressions = ["+", ["download"], ["download"]];
+var exp = ["+", ["download"], ["download"]];
 
-nisp(expressions, sandbox).then(function (out) {
+nisp(exp, sandbox).then(function (out) {
     // It will take about 1 seconds to log out.
     console.log(out) // => 2
 });
