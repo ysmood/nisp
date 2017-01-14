@@ -1,5 +1,5 @@
 // ["list", a, b, c, ...]
-module.exports = function (run, ast, sandbox, env) {
+export default function (run, ast, sandbox, env) {
     var arr = [];
 
     for (var i = 1; i < ast.length; i++) {

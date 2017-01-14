@@ -1,6 +1,6 @@
 
 // The function make the all the evaluation completely lazy.
-module.exports = function (fn) {
+export default function (fn) {
     return function (run, ast, sandbox, env) {
         return fn(function (index, type, args) {
             index++;

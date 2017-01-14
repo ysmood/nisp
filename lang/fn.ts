@@ -1,6 +1,6 @@
 
 // ["fn", [<arg1>, <arg2>, ...], <exp1>, <exp2>, ...]
-module.exports = function (run, fnAst, sandbox, env) {
+export default function (run, fnAst, sandbox, env) {
     return function (run, ast) {
         // generate a closure
         var closure = assign({}, sandbox);

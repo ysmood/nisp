@@ -1,6 +1,6 @@
 
 // ["fn", <arg1>, <arg2>, ...]
-module.exports = function (fn, customPromise) {
+export default function (fn, customPromise) {
     var P = customPromise || Promise; // eslint-disable-line
 
     return function (run, args, sandbox, env) {
@@ -10,10 +10,7 @@ module.exports = function (fn, customPromise) {
         }
 
         return P.all(plainArgs).then(function (syncedArgs) {
-            return fn.apply(
-                { env: env, sandbox: sandbox, ast: args, run: run },
-                syncedArgs
-            );
+            return fn(syncedArgs, env, sandbox, args, run);
         });
     };
 };

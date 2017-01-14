@@ -2,8 +2,5 @@
     "compilerOptions": {
         "target": "es3",
         "module": "commonjs"
-    },
-    "exclude": [
-        "node_modules"
-    ]
+    }
 }

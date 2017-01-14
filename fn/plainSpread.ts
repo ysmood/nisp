@@ -1,5 +1,5 @@
 // ["fn", <arg1>, <arg2>, ...]
-module.exports = function (fn) {
+export default function (fn) {
     return function (run, args, sandbox, env) {
         var plainArgs = [], len = args.length;
 

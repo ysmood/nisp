@@ -1,53 +1,49 @@
-var nisp = require("../core");
-var Promise = require("yaku");
-var yutils = require("yaku/lib/utils");
-var $ = require("../fn/$");
+import nisp, { encode, exec } from "../core"
+import Promise from "yaku"
+import yutils from "yaku/lib/utils"
+import $ from "../fn/$"
 
-var fns = {
-    plain: require("../fn/plain"),
-    plainSpread: require("../fn/plainSpread"),
-    plainAsync: require("../fn/plainAsync"),
-    plainAsyncSpread: require("../fn/plainAsyncSpread"),
-    args: require("../fn/args")
-};
+import plain from "../fn/plain"
+import plainSpread from "../fn/plainSpread"
+import plainAsync from "../fn/plainAsync"
+import plainAsyncSpread from "../fn/plainAsyncSpread"
+import args from "../fn/args"
+import $do from "../lang/do"
+import $if from "../lang/if"
+import def from "../lang/def"
+import fn from "../lang/fn"
+import list from "../lang/list"
+import dict from "../lang/dict"
 
-var langs = {
-    do: require("../lang/do"),
-    if: require("../lang/if"),
-    def: require("../lang/def"),
-    fn: require("../lang/fn"),
-    list: require("../lang/list"),
-    dict: require("../lang/dict"),
 
-    add: fns.plain(function (args) {
-        return args.reduce(function (s, v) {
-            return s += v;
-        });
-    })
-};
+let add = plain(function (args) {
+    return args.reduce(function (s, v) {
+        return s += v;
+    });
+})
 
-module.exports = function (it) {
+export default function (it) {
 
     it.describe("basic", function (it) {
         it("number", function () {
-            return it.eq(nisp(1), 1);
+            return it.eq(nisp(1, {}), 1);
         });
 
         it("string", function () {
-            return it.eq(nisp("ok"), "ok");
+            return it.eq(nisp("ok", {}), "ok");
         });
 
         it("object", function () {
-            return it.eq(nisp({ a: "ok" }), { a: "ok" });
+            return it.eq(nisp({ a: "ok" }, {}), { a: "ok" });
         });
 
         it("null", function () {
-            return it.eq(nisp(null), null);
+            return it.eq(nisp(null, {}), null);
         });
 
         it("symbol undefined", function () {
             try {
-                nisp([1, 2]);
+                nisp([1, 2], {});
                 throw new Error("should throw error");
             } catch (err) {
                 return it.eq(err.message, "nisp '1' is undefined, ast: [1,2]");
@@ -73,10 +69,10 @@ module.exports = function (it) {
 
         it("def", function () {
             var sandbox = {
-                do: langs.do,
-                "+": langs.add,
-                "@": langs.fn,
-                def: langs.def
+                do: $do,
+                "+": add,
+                "@": fn,
+                def: def
             };
 
             var ast = ["do",
@@ -93,8 +89,8 @@ module.exports = function (it) {
 
         it("list", function () {
             var sandbox = {
-                "list": langs.list,
-                "+": langs.add
+                "list": list,
+                "+": add
             };
 
             var ast = ["list", 1, ["+", 1, 1], 3];
@@ -104,8 +100,8 @@ module.exports = function (it) {
 
         it("dict", function () {
             var sandbox = {
-                "dict": langs.dict,
-                "+": langs.add
+                "dict": dict,
+                "+": add
             };
 
             var ast = ["dict",
@@ -119,8 +115,8 @@ module.exports = function (it) {
 
         it("custom if", function () {
             var sandbox = {
-                "+": langs.add,
-                "?": langs.if
+                "+": add,
+                "?": $if
             };
 
             var ast = ["?", ["+", 0, ["+", 1, 0]], 1, 2];
@@ -130,10 +126,10 @@ module.exports = function (it) {
 
         it("custom fn", function () {
             var sandbox = {
-                "do": langs.do,
-                "+": langs.add,
-                "def": langs.def,
-                "@": langs.fn
+                "do": $do,
+                "+": add,
+                "def": def,
+                "@": fn
             };
 
             var ast = ["do",
@@ -150,9 +146,9 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox), 4);
         });
 
-        it("fns.plainSpread", function () {
+        it("plainSpread", function () {
             var sandbox = {
-                "+": fns.plainSpread(function (a, b) {
+                "+": plainSpread(function (a, b) {
                     return a + b;
                 })
             };
@@ -162,9 +158,9 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox), 2);
         });
 
-        it("fns.args", function () {
+        it("args", function () {
             var sandbox = {
-                "+": fns.args(function (args) {
+                "+": args(function (args) {
                     return args(0) + args(1);
                 })
             };
@@ -176,11 +172,11 @@ module.exports = function (it) {
 
         it("fn as arg", function () {
             var sandbox = {
-                foo: fns.plain(function (args) {
+                foo: plain(function (args) {
                     return args[0] + 1;
                 }),
 
-                add: fns.args(function (args) {
+                add: args(function (args) {
                     return args(0, "fn", 1) + args(1, "fn", 1);
                 })
             };
@@ -192,7 +188,7 @@ module.exports = function (it) {
 
         it("anonymous fn", function () {
             var sandbox = {
-                fn: langs.fn
+                fn: fn
             };
 
             var ast = [["fn", ["a"], ["a"]], "ok"];
@@ -200,12 +196,12 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox), "ok");
         });
 
-        it("fns.plainAsync", function () {
+        it("plainAsync", function () {
             var sandbox = {
-                "get": fns.plainAsync(function (args, env) {
+                "get": plainAsync(function (args, env) {
                     return yutils.sleep(13, args[0] + env);
                 }, Promise),
-                "+": fns.plainAsync(function (args) {
+                "+": plainAsync(function (args) {
                     return yutils.sleep(13).then(function () {
                         return args[0] + args[1];
                     });
@@ -217,12 +213,12 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox, 1), 5);
         });
 
-        it("fns.plainAsyncSpread", function () {
+        it("plainAsyncSpread", function () {
             var sandbox = {
-                "get": fns.plainAsyncSpread(function (v) {
+                "get": plainAsyncSpread(function (v) {
                     return yutils.sleep(13, v + this.env);
                 }, Promise),
-                "+": fns.plainAsyncSpread(function (a, b) {
+                "+": plainAsyncSpread(function (a, b) {
                     return yutils.sleep(13).then(function () {
                         return a + b;
                     });
@@ -236,44 +232,44 @@ module.exports = function (it) {
 
         it("grammar", function () {
             var sandbox = {
-                do: langs.do,
-                def: langs.def,
-                "+": fns.plain(function (args) {
+                do: $do,
+                def: def,
+                "+": plain(function (args) {
                     return args.reduce(function (a, b) { return a + b; }, 0);
                 }),
-                "get": fns.plainSpread(function (a, b) {
+                "get": plainSpread(function (a, b) {
                     return a[b];
                 })
             };
 
             var json = [1];
 
-            var code = nisp.encode`(do
+            var code = encode`(do
                 (def "a" ${json})
                 (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
             )`;
 
-            return it.eq(nisp.exec(code, sandbox), "3str0");
+            return it.eq(exec(code, sandbox), "3str0");
         });
 
         it("grammar error", function () {
             var sandbox = {
-                "+": fns.plain(function (args) {
+                "+": plain(function (args) {
                     return args.reduce(function (a, b) { return a + b; }, 0);
                 }),
-                "get": fns.plainSpread(function (a, b) {
+                "get": plainSpread(function (a, b) {
                     return a[b];
                 })
             };
 
             var json = { a : 1 };
 
-            var code = nisp.encode`
+            var code = encode`
                 (+ (get ${json} "a") 2
             `
 
             try {
-                it.eq(nisp.exec(code, sandbox), 3);
+                it.eq(exec(code, sandbox), 3);
             } catch (err) {
                 return it.eq(err.message, "Expected \"(\", \")\", \"[\", \"false\", \"null\", \"true\", \"{\", binary, number, or string but end of input found.");
             }

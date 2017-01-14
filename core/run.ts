@@ -1,10 +1,12 @@
+import { isArray, isFunction } from './utils'
+
 /**
  * Eval a expression with specific env.
  * @param  {Array} ast The ast of the program.
  * @param  {Object} env key/value object.
  * @return {Any} The computed value.
  */
-function run (ast, sandbox, env) {
+function run (ast, sandbox: Sandbox, env: {}) {
     if (!env) throw new TypeError("nisp env is required");
     if (!sandbox) throw new TypeError("nisp sandbox is required");
 
@@ -30,24 +32,18 @@ function run (ast, sandbox, env) {
     }
 }
 
-function isArray (obj) {
-    return typeof obj === "object" && obj !== null && typeof obj.length === "number";
-}
-
-function isFunction (obj) {
-    return typeof obj === "function";
+export interface Sandbox {
+    [name: string]: Function
 }
 
 /**
  * Eval an  ast
- * @param  {Array} ast A freezed world, pure and simple.
- * @param  {Object} env The interface that directly connects to the real world.
+ * @param {any} ast A freezed world, pure and simple.
+ * @param {Sandbox} sandbox The interface that directly connects to the real world.
  * It defined how to tranform the freezed world into the real world
+ * @param {Object} env The system space of the vm
  * @return {Any}
  */
-module.exports = function (ast, sandbox, env) {
-    if (!sandbox) sandbox = {};
-    if (!env) env = {};
-
+export default function (ast, sandbox: Sandbox, env = {}) {
     return run(ast, sandbox, env);
 };

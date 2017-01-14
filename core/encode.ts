@@ -13,9 +13,7 @@ var isArray = function (target) {
     return Object.prototype.toString.call(target).slice(8, -1) === "Array";
 };
 
-module.exports = function () {
-    var literals = arguments[0];
-    var placeHolder = slice.call(arguments, 1);
+export default function (literals: TemplateStringsArray, ...placeHolder) {
     var str = [literals[0]];
     for (var i = 1 ; i < literals.length ; ++ i) {
         var val = placeHolder[i - 1];
