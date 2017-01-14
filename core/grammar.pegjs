@@ -1,10 +1,7 @@
 //Nisp Grammar
 //[1] https://github.com/pegjs/pegjs/blob/master/examples/json.pegjs
 {
-  function sandbox(name) {
-    return options.sandbox[name]
-  }
-  
+
   function decode(value) {
     return options.decode(value)
   }
@@ -15,9 +12,9 @@ nisp
   / ws '(' ws ')' ws { return undefined }
 
 call
-  = ref:ref ws args:arguments { return [sandbox(ref)].concat(args) }
+  = ref:ref ws args:arguments { return [ref].concat(args) }
   / ref:ref { return [sandbox(ref)] }
-  
+
 ref
   = "(" ws call:call ws ")" { return call }
   / identifier
@@ -35,7 +32,7 @@ data
 
 identifier "id"
   = [^()'" \t\n\r]+ { return text() }
-  
+
 binary "binary"
   = [\x60][^\x60]*[\x60] { return decode(text().slice(1, -1)) }
 
@@ -139,7 +136,7 @@ stringx "stringx"
 
 string "string"
   = quotation_mark chars:char* quotation_mark { return chars.join(""); }
-  
+
 charx
   = unescapedx
   / escape
@@ -181,13 +178,13 @@ escape
 
 quotation_markx
   = "'"
-  
+
 quotation_mark
   = '"'
 
 unescaped
   = [^\0-\x1F\x22\x5C]
-  
+
 unescapedx
   = [^\0-\x1F\x27\x5C]
 

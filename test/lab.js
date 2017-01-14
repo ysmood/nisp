@@ -4,35 +4,14 @@ var nisp = require("../core");
 var Promise = require("yaku");
 var yutils = require("yaku/lib/utils");
 
-
-var fns = {
-    plain: require("../fn/plain"),
-    plainSpread: require("../fn/plainSpread"),
-    plainAsync: require("../fn/plainAsync"),
-    plainAsyncSpread: require("../fn/plainAsyncSpread"),
-    args: require("../fn/args")
-};
-
-
-var langs = {
+var sandbox = {
     do: require("../lang/do"),
-    if: require("../lang/if"),
-    plain: require("../lang/plain"),
     def: require("../lang/def"),
-    fn: require("../lang/fn"),
-    list: require("../lang/list"),
-    dict: require("../lang/dict"),
-
-    add: fns.plain(function (args) {
-        return args.reduce(function (s, v) {
-            return s += v;
-        });
-    })
+    if: require("../lang/if")
 };
 
-// var tpl = nisp.new`
-//     ( add 1 ${Buffer.from('str')} )
-// `;
+var code = nisp.encode`(do
+    (def "a" 10)
+)`;
 
-
-// console.log(tpl(langs))
+console.log(nisp.exec(code, sandbox)); // => 20

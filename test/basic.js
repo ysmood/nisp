@@ -235,9 +235,10 @@ module.exports = function (it) {
             return it.eq(nisp(ast, sandbox, 1), 5);
         });
 
-
         it("grammar", function () {
             var sandbox = {
+                do: langs.do,
+                def: langs.def,
                 "+": fns.plain(function (args) {
                     return args.reduce(function (a, b) { return a + b; }, 0);
                 }),
@@ -246,11 +247,12 @@ module.exports = function (it) {
                 })
             };
 
-            var json = { a : 1 };
+            var json = [1];
 
-            var code = nisp.encode([
-                "(+ (get ", " ", ") 2 ", " ", ")"
-            ], json, "a", Buffer.from("str"), [0]);
+            var code = nisp.encode`(do
+                (def "a" ${json})
+                (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
+            )`;
 
             return it.eq(nisp.exec(code, sandbox), "3str0");
         });
@@ -267,9 +269,9 @@ module.exports = function (it) {
 
             var json = { a : 1 };
 
-            var code = nisp.encode([
-                "(+ (get ", " ", " 2)"
-            ], json, "a");
+            var code = nisp.encode`
+                (+ (get ${json} "a") 2
+            `
 
             try {
                 it.eq(nisp.exec(code, sandbox), 3);
