@@ -9,7 +9,8 @@ function run (ast, sandbox, env) {
     if (!sandbox) throw new TypeError("nisp sandbox is required");
 
     if (isArray(ast)) {
-        if (ast[0] === "$") // raw data
+        // handle raw data, this is the only builtin function
+        if (ast[0] === "$")
             return ast[1];
 
         var action = run(ast[0], sandbox, env);

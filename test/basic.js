@@ -1,6 +1,7 @@
 var nisp = require("../core");
 var Promise = require("yaku");
 var yutils = require("yaku/lib/utils");
+var $ = require("../fn/$");
 
 var fns = {
     plain: require("../fn/plain"),
@@ -13,7 +14,6 @@ var fns = {
 var langs = {
     do: require("../lang/do"),
     if: require("../lang/if"),
-    plain: require("../lang/plain"),
     def: require("../lang/def"),
     fn: require("../lang/fn"),
     list: require("../lang/list"),
@@ -55,8 +55,7 @@ module.exports = function (it) {
         });
 
         it("plain", function () {
-            return it.eq(nisp(["p", [1, "ok"]], {
-                "p": langs.plain
+            return it.eq(nisp($([1, "ok"]), {
             }), [1, "ok"]);
         });
 

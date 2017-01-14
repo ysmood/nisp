@@ -1,3 +1,5 @@
+var parser = require("./parser");
+
 var isBuffer = function (obj) {
     return (typeof Buffer !== "undefined") && Buffer.isBuffer(obj);
 };
@@ -20,7 +22,7 @@ module.exports = function () {
         if (isBuffer(val)) {
             str.push("`" + encode(val) + "`");
         } else if (isArray(val)) {
-            str.push("(plain " + JSON.stringify(val) + ")");
+            str.push("($ " + JSON.stringify(val) + ")");
         } else {
             str.push(JSON.stringify(val));
         }
