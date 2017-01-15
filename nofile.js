@@ -2,7 +2,7 @@ var kit = require("nokit");
 
 module.exports = function (task) {
     task("build", function () {
-        return kit.spawn('pegjs', ['core/parser.pegjs'])
+        return kit.spawn('pegjs', ['core/parser/index.pegjs'])
         .then(function () {
             return kit.spawn('tsc')
         })

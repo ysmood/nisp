@@ -1,25 +1,39 @@
 import { isArray, isFunction } from './utils'
 
 export interface Sandbox {
-    macros?: {
-        [name: string]: Function
-    }
     [name: string]: any
 }
 
-interface Env {
-    sandbox?: Sandbox
-    run?: typeof run
+export interface Fn {
+    (...args)
+    macro?: typeof macro
 }
 
-function apply (fn, ast, env) {
-    var plainArgs = [], len = ast.length;
+// To safely mark a function as macro function
+export function macro (fn) {
+    return Object.defineProperty(fn, 'macro', {
+        configurable: false,
+        value: macro
+    }) as Fn
+}
+
+function apply (fn: Fn, ast, sandbox, env, stack: any[]) {
+    if (fn.macro === macro)
+        return fn(ast, sandbox, env, stack)
+
+    var args = [], len = ast.length;
 
     for (var i = 1; i < len; i++) {
-        plainArgs[i - 1] = env.run(ast[i], env);
+        args[i - 1] = run(ast[i], sandbox, env, stack);
     }
 
-    return fn.apply(env, plainArgs);
+    return fn.apply(env, args);
+}
+
+function error (msg: string, stack: any[]) {
+    throw new TypeError(
+        `[nisp] ${msg}\nstack: ${JSON.stringify(stack)}`
+    );
 }
 
 /**
@@ -28,38 +42,29 @@ function apply (fn, ast, env) {
  * @param  {Object} env key/value object.
  * @return {Any} The computed value.
  */
-function run (ast, env: Env) {
-    if (!env) throw new TypeError("nisp env is required");
-    if (!env.run) throw new TypeError("nisp env.run is required");
-
-    var sandbox = env.sandbox
-    if (!sandbox) throw new TypeError("nisp env.sandbox is required");
+function run (ast, sandbox: Sandbox, env, stack: any[]) {
+    if (!env) error("nisp env is required", stack);
+    if (!sandbox) error("nisp env.sandbox is required", stack);
 
     if (isArray(ast)) {
-        var macros = sandbox.macros
-        var action = ast[0]
+        var action = run(ast[0], sandbox, env, stack)
         var fn
+
+        if (stack) stack = stack.concat(action)
 
         // handle raw data, this is the only builtin function
         if (action === "$")
             return ast[1];
 
         if (isFunction(action)) {
-            return apply(action, ast, env)
+            return apply(action, ast, sandbox, env, ast[0])
         }
 
         if (action in sandbox) {
             fn = sandbox[action];
-            return isFunction(fn) ? apply(fn, ast, env) : fn;
-        } else if (macros && action in macros) {
-            fn = macros[action]
-            if (isFunction(fn)) {
-                return fn(ast, env)
-            } else {
-                throw new TypeError(`nisp function ${action} is undefined, ast: ${JSON.stringify(ast)}`);
-            }
+            return isFunction(fn) ? apply(fn, ast, sandbox, env, stack) : fn;
         } else {
-                throw new TypeError(`nisp macro ${action} is undefined, ast: ${JSON.stringify(ast)}`);
+            error(`function "${action}" is undefined`, stack);
         }
     } else {
         return ast;
@@ -71,12 +76,10 @@ function run (ast, env: Env) {
  * @param {any} ast A freezed world, pure and simple.
  * @param {Sandbox} sandbox The interface that directly connects to the real world.
  * It defined how to tranform the freezed world into the real world
- * @param {Env} env The system space of the vm
+ * @param {Object} env The system space of the vm
+ * @param {any[]} stack Stack info
  * @return {any}
  */
-export default function (ast, sandbox: Sandbox, env: Env = {}) {
-    env.run = run
-    env.sandbox = sandbox
-
-    return run(ast, env);
+export default function (ast, sandbox: Sandbox, env = {}, stack = []) {
+    return run(ast, sandbox, env, stack);
 };

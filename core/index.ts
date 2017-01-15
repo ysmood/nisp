@@ -1,4 +1,4 @@
-import run from './run'
+import run, { Sandbox, Fn, macro } from './run'
 import encode from './encode'
 import exec from './exec'
 
@@ -6,5 +6,8 @@ export default run
 
 export {
     encode,
-    exec
+    exec,
+    Sandbox,
+    Fn,
+    macro
 }

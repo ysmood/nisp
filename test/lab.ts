@@ -1,9 +1,31 @@
 /*eslint-disable */
 
-import run from '../core/run'
+import nisp, { encode, exec } from '../core'
+import list from '../lib/list'
+import fn from '../lib/fn'
+import $do from '../lib/do'
+import def from '../lib/def'
 
-// ['@', 'if', true, 1, 2]
-// ['if', true, 1, 2]
-let ret = run(['$', [1, 2]], {})
+let add = function (...args) {
+    return args.reduce(function (s, v) {
+        return s += v;
+    });
+}
 
-console.log(ret)
+var sandbox = {
+    do: $do,
+    "+": add,
+    "get": function (a, b) {
+        return a[b];
+    },
+    def
+};
+
+var json = [1];
+
+var code = encode`(do
+    (def a ${json})
+    (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
+)`;
+
+console.log(exec(code, sandbox))

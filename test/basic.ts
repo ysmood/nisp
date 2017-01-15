@@ -1,26 +1,22 @@
 import nisp, { encode, exec } from "../core"
 import Promise from "yaku"
-import yutils from "yaku/lib/utils"
-import $ from "../fn/$"
+import * as sleep from "yaku/lib/sleep"
+import $ from "../lib/$"
 
-import plain from "../fn/plain"
-import plainSpread from "../fn/plainSpread"
-import plainAsync from "../fn/plainAsync"
-import plainAsyncSpread from "../fn/plainAsyncSpread"
-import args from "../fn/args"
-import $do from "../lang/do"
-import $if from "../lang/if"
-import def from "../lang/def"
-import fn from "../lang/fn"
-import list from "../lang/list"
-import dict from "../lang/dict"
+import $do from "../lib/do"
+import list from "../lib/list"
+import dict from "../lib/dict"
+import async from '../lib/async'
+import $if from "../lib/if"
+import def from "../lib/def"
+import fn from "../lib/fn"
 
 
-let add = plain(function (args) {
+let add = function (...args) {
     return args.reduce(function (s, v) {
         return s += v;
     });
-})
+}
 
 export default function (it) {
 
@@ -46,7 +42,7 @@ export default function (it) {
                 nisp([1, 2], {});
                 throw new Error("should throw error");
             } catch (err) {
-                return it.eq(err.message, "nisp '1' is undefined, ast: [1,2]");
+                return it.eq(err.message, `[nisp] function "1" is undefined\nstack: [1]`);
             }
         });
 
@@ -57,8 +53,8 @@ export default function (it) {
 
         it("env", function () {
             var sandbox = {
-                "env": function (run, ast, sandbox, env) {
-                    return env;
+                env: function () {
+                    return this;
                 }
             };
 
@@ -72,7 +68,7 @@ export default function (it) {
                 do: $do,
                 "+": add,
                 "@": fn,
-                def: def
+                def
             };
 
             var ast = ["do",
@@ -128,17 +124,17 @@ export default function (it) {
             var sandbox = {
                 "do": $do,
                 "+": add,
-                "def": def,
+                def,
                 "@": fn
             };
 
             var ast = ["do",
                 ["def", "c", 10],
                 ["def", "foo",
-                    ["@", ["a", "b"],
+                    ["@", ["a", "b"], ['do',
                         ["def", "c", 1],
                         ["+", ["a"], ["b"], ["c"]]
-                    ]
+                    ]]
                 ],
                 ["foo", 1, ["+", 1, 1]]
             ];
@@ -146,49 +142,9 @@ export default function (it) {
             return it.eq(nisp(ast, sandbox), 4);
         });
 
-        it("plainSpread", function () {
-            var sandbox = {
-                "+": plainSpread(function (a, b) {
-                    return a + b;
-                })
-            };
-
-            var ast = ["+", 1, 1];
-
-            return it.eq(nisp(ast, sandbox), 2);
-        });
-
-        it("args", function () {
-            var sandbox = {
-                "+": args(function (args) {
-                    return args(0) + args(1);
-                })
-            };
-
-            var ast = ["+", 1, 1];
-
-            return it.eq(nisp(ast, sandbox), 2);
-        });
-
-        it("fn as arg", function () {
-            var sandbox = {
-                foo: plain(function (args) {
-                    return args[0] + 1;
-                }),
-
-                add: args(function (args) {
-                    return args(0, "fn", 1) + args(1, "fn", 1);
-                })
-            };
-
-            var ast = ["add", "foo", "foo"];
-
-            return it.eq(nisp(ast, sandbox), 4);
-        });
-
         it("anonymous fn", function () {
             var sandbox = {
-                fn: fn
+                fn
             };
 
             var ast = [["fn", ["a"], ["a"]], "ok"];
@@ -196,30 +152,13 @@ export default function (it) {
             return it.eq(nisp(ast, sandbox), "ok");
         });
 
-        it("plainAsync", function () {
+        it("async", function () {
             var sandbox = {
-                "get": plainAsync(function (args, env) {
-                    return yutils.sleep(13, args[0] + env);
+                "get": async(function (v) {
+                    return sleep(13, v + this);
                 }, Promise),
-                "+": plainAsync(function (args) {
-                    return yutils.sleep(13).then(function () {
-                        return args[0] + args[1];
-                    });
-                }, Promise)
-            };
-
-            var ast = ["+", ["get", 1], ["get", 2]];
-
-            return it.eq(nisp(ast, sandbox, 1), 5);
-        });
-
-        it("plainAsyncSpread", function () {
-            var sandbox = {
-                "get": plainAsyncSpread(function (v) {
-                    return yutils.sleep(13, v + this.env);
-                }, Promise),
-                "+": plainAsyncSpread(function (a, b) {
-                    return yutils.sleep(13).then(function () {
+                "+": async(function (a, b) {
+                    return sleep(13).then(() => {
                         return a + b;
                     });
                 }, Promise)
@@ -233,19 +172,17 @@ export default function (it) {
         it("grammar", function () {
             var sandbox = {
                 do: $do,
-                def: def,
-                "+": plain(function (args) {
-                    return args.reduce(function (a, b) { return a + b; }, 0);
-                }),
-                "get": plainSpread(function (a, b) {
+                "+": add,
+                "get": function (a, b) {
                     return a[b];
-                })
+                },
+                def
             };
 
             var json = [1];
 
             var code = encode`(do
-                (def "a" ${json})
+                (def a ${json})
                 (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
             )`;
 
@@ -254,12 +191,10 @@ export default function (it) {
 
         it("grammar error", function () {
             var sandbox = {
-                "+": plain(function (args) {
-                    return args.reduce(function (a, b) { return a + b; }, 0);
-                }),
-                "get": plainSpread(function (a, b) {
+                "+": add,
+                "get": function (a, b) {
                     return a[b];
-                })
+                }
             };
 
             var json = { a : 1 };
@@ -271,7 +206,7 @@ export default function (it) {
             try {
                 it.eq(exec(code, sandbox), 3);
             } catch (err) {
-                return it.eq(err.message, "Expected \"(\", \")\", \"[\", \"false\", \"null\", \"true\", \"{\", binary, number, or string but end of input found.");
+                return it.eq(err.message, `Expected ")" but end of input found.`);
             }
 
             throw new Error();

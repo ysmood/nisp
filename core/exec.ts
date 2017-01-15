@@ -1,4 +1,4 @@
-import * as parser from "./parser.js";
+import { parse } from "./parser";
 import run from "./run";
 
 function atob (str) {
@@ -9,7 +9,7 @@ function json (str) {
     return JSON.parse(str)
 }
 
-export default function (code, sandbox, env?) {
+export default function (code, sandbox, env?, stack?) {
     if (!sandbox.atob) {
         sandbox.atob = atob;
     }
@@ -17,5 +17,5 @@ export default function (code, sandbox, env?) {
         sandbox.json = json;
     }
 
-    return run(code, sandbox, env);
+    return run(parse(code), sandbox, env, stack);
 };

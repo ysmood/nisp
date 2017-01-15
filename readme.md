@@ -68,28 +68,6 @@ nisp.exec(exp, sandbox); // => 9
 ```
 
 
-### Use the predefined functions
-
-Only if the `$` function is defined, can the user define variable.
-
-```js
-var nisp = require("nisp");
-
-var sandbox = {
-    do: require("nisp/lang/do"),
-    def: require("nisp/lang/def"),
-    if: require("nisp/lang/if")
-};
-
-var exp = ["do",
-    ["def", "a", ["if", false, 10, 20]],
-    "a"
-];
-
-nisp(exp, sandbox); // => 20
-```
-
-
 ### Composable RPC
 
 ```js
