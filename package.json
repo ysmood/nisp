@@ -27,11 +27,11 @@
   },
   "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
-    "@types/node": "^7.0.0",
-    "junit": "1.4.8",
+    "@types/node": "7.0.0",
+    "junit": "1.4.9",
     "nokit": "0.23.18",
-    "pegjs": "^0.10.0",
-    "typescript": "^2.1.5",
+    "pegjs": "0.10.0",
+    "typescript": "2.1.5",
     "yaku": "0.17.8"
   }
 }
