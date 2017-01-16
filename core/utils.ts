@@ -1,5 +1,5 @@
 export function isArray (obj): obj is Array<any> {
-    return typeof obj === "object" && obj !== null && typeof obj.length === "number";
+    return obj && obj.constructor === Array;
 }
 
 export function isFunction (obj): obj is Function {

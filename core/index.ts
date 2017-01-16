@@ -25,9 +25,9 @@ function apply (fn: Fn, ast, sandbox, env, stack: any[]) {
     if (fn.macro === macro)
         return fn(ast, sandbox, env, stack)
 
-    var args = [], len = ast.length;
+    let args = [], len = ast.length;
 
-    for (var i = 1; i < len; i++) {
+    for (let i = 1; i < len; i++) {
         args[i - 1] = run(ast[i], sandbox, env, stack);
     }
 
@@ -40,32 +40,27 @@ function error (msg: string, stack: any[]) {
     );
 }
 
-/**
- * Eval a expression with specific env.
- * @param  {Array} ast The ast of the program.
- * @param  {Object} env key/value object.
- * @return {Any} The computed value.
- */
 function run (ast, sandbox: Sandbox, env, stack: any[]) {
     if (!env) error("nisp env is required", stack);
     if (!sandbox) error("nisp sandbox is required", stack);
 
     if (isArray(ast)) {
-        var action = run(ast[0], sandbox, env, stack)
-        var fn
-
-        if (stack) stack = stack.concat(action)
+        let action = ast[0]
 
         // handle raw data, this is the only builtin function
         if (action === "$")
             return ast[1];
+
+        action = run(action, sandbox, env, stack)
+
+        if (stack) stack = stack.concat(action)
 
         if (isFunction(action)) {
             return apply(action, ast, sandbox, env, ast[0])
         }
 
         if (action in sandbox) {
-            fn = sandbox[action];
+            let fn = sandbox[action];
             return isFunction(fn) ? apply(fn, ast, sandbox, env, stack) : fn;
         } else {
             error(`function "${action}" is undefined`, stack);
@@ -76,12 +71,15 @@ function run (ast, sandbox: Sandbox, env, stack: any[]) {
 }
 
 /**
- * Eval an  ast
+ * Eval an nisp ast
  * @param {any} ast A freezed world, pure and simple.
  * @param {Sandbox} sandbox The interface that directly connects to the real world.
- * It defined how to tranform the freezed world into the real world
- * @param {Object} env The system space of the vm
- * @param {any[]} stack Stack info
+ * It defined how to transform the freezed world into the real world.
+ * There's only one builtin function `$`, you cannot overwrite it, it is used to
+ * mark raw data, the object follow by it will not be handled by the vm.
+ * @param {Object} env The system space of the vm.
+ * @param {any[]} stack Stack info, if you want to boost the performance
+ * You can pass in `null` to disable the stack tracing.
  * @return {any}
  */
 export default function (ast, sandbox: Sandbox, env = {}, stack = []) {
