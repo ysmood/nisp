@@ -6,7 +6,7 @@
 The interesting part is that nisp is designed to be non-turing-complete.
 
 You have the full control of the vm and ast,
-you can decide what the language will have, or how lazy the expwill be.
+you can decide what the language will have, or how lazy the expresssion will be.
 for example, if you don't expose the `if` exp the user can never express if logic.
 
 By default nisp only presents the meta data of the program itself. So by default
@@ -15,7 +15,9 @@ it is used to exchange plain data.
 You may ask what it really does? Yes, it does nothing. And that is exactly what a composable permission
 protocol needs. I use it to expose composable api.
 
-The ast of nisp is plain JSON, the js implementation is only 35 lines of code, so it will be very to port nisp to other languages. No closure or complex data type is required, even plain C can implement nisp easily.
+The ast of nisp is plain JSON, the js implementation is only around 50 lines of code,
+so it will be very to port nisp to other languages. 
+No closure or complex data type is required, even plain C can implement nisp easily.
 
 Everything inside nisp is a function, it's very easy to keep everything type safe, plus the composable nature,
 nisp is an ideal middle layer to carry query or RPC.
@@ -30,76 +32,60 @@ For more examples, read the unit test of this project.
 Here the user can only use it as a sum-only-calculator.
 
 ```js
-var nisp = require("nisp");
-var p = require("nisp/fn/plain");
+import nisp from 'nisp'
 
 var sandbox = {
-    "+": p(arr => arr.reduce((a, b) => a + b))
+    "+": (a, b) => a + b
 };
 
-var exp = ["+", 1, 2, 3];
+var exp = ["+", 1, 2];
 
-nisp(exp, sandbox); // => 6
+nisp(exp, sandbox); // => 3
 ```
 
 
 ### Encode and escape data
 
 Sometimes you may want to separate nisp code and raw data,
-Here we provide `nisp.encode` to simplify the pain of typing
-quotes and commas. The grammar is almost the same with lisp.
+Here we provide `encode` function to simplify the pain of typing
+quotes and commas. The grammar is a subset of lisp.
 
 ```js
-var nisp = require("nisp");
-var p = require("nisp/fn/plainSpread");
+import { encode, exec } from 'nisp'
 
 var sandbox = {
-    raw: raw,
-    "+": p(arr => arr.reduce((a, b) => a + b)),
-    "++": p(arr => arr.map(a => a + 1))
+    "+": (...ns) => ns.reduce((a, b) => a + b),
+    "++": (...ns) => ns.map(a => a + 1)
 };
 
 var data = [1, 2, 3]
 
-var exp = nisp.encode`(+ (++ ${data}))`
-// exp <= ["+", ["++", ["$", ["1", "2", "3"]]]]
+var exp = encode`(+ (++ ${data}))`
 
-nisp.exec(exp, sandbox); // => 9
+exec(exp, sandbox); // => 9
 ```
 
 
 ### Composable RPC
 
 ```js
-var nisp = require("nisp");
-var plain = require("nisp/fn/plain");
-var args = require("nisp/fn/args");
+import nisp from 'nisp'
 
 var sandbox = {
-    concat: plain(function () {
-        return Array.prototype.concat.apply([], arguments);
-    }),
+    concat (...args) {
+        return args.reduce((a, b) => a.concat(b));
+    },
 
-    map: args(function (arg) {
-        return arg(1).map(function (item) {
-            return arg(0, 'fn', item);
-        });
-    }),
-
-    getAnimals: plain(function (args, session) {
-        if (session.isZooKeeper)
+    getAnimals () {
+        if (this.session.isZooKeeper)
             return ['cat', 'dog'];
         else
             throw new Error("Not Allowed");
-    }),
+    },
 
-    getFruits: plain(function () {
+    getFruits () {
         return ['apple', 'banana'];
-    }),
-
-    getDetails: plain(function (args) {
-        return 'Details: ' + args;
-    })
+    }
 };
 
 var session = {
@@ -107,31 +93,25 @@ var session = {
     isZooKeeper: true
 }
 
-var exp = ["map", "getDetails", ["concat", ["getAnimals"], ["getFruits"]]];
+var exp = ["concat", ["getAnimals"], ["getFruits"]];
 
 nisp(exp, sandbox, session);
 ```
 
-### Full control the ast
+### Full control the ast with macro
 
-Here we implementation a `if` exp The `if` expis very special,
+Here we implementation a `if` expression The `if` expression is very special,
 it cannot be achieved without ast manipulation.
 
 ```js
-var nisp = require("nisp");
-var args = require("nisp/lib/args");
-var plain = require("nisp/fn/plain");
+import { encode, exec, macro } from 'nisp'
 
 var sandbox = {
-    // Full lazy.
-    if: args(function (v) {
-        return v(0) ? v(1) : v(2);
-    }),
-
     // Most times you don't want to use it.
-    "non-lazy-if": plain(function (args) {
-        return args[0] ? args[1] : args[2];
-    })
+    "non-lazy-if": (cond, a, b) => cond ? a : b,
+
+    // Full lazy.
+    if: macro((ast, sandbox, env, stack) => cond ? a : b),
 
     // Even half lazy, you have the full control to how lazy the program will be.
     // No matter v(0) is true or false, v(1) will be calculated.

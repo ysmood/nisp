@@ -1,6 +1,8 @@
 /*eslint-disable */
 
-import nisp, { encode, exec } from '../core'
+import nisp from '../core'
+import encode from '../lib/encode'
+import exec from '../lib/exec'
 import list from '../lib/list'
 import fn from '../lib/fn'
 import $do from '../lib/do'
@@ -15,7 +17,7 @@ let add = function (...args) {
 var sandbox = {
     do: $do,
     "+": add,
-    "get": function (a, b) {
+    "get" (a, b) {
         return a[b];
     },
     def

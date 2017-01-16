@@ -1,5 +1,5 @@
-import { parse } from "./parser";
-import run from "./run";
+import { parse } from "../parser";
+import nisp from "../core";
 
 function atob (str) {
     return (typeof Buffer === "undefined") ? atob(str) : Buffer.from(str, "base64");
@@ -17,5 +17,5 @@ export default function (code, sandbox, env?, stack?) {
         sandbox.json = json;
     }
 
-    return run(parse(code), sandbox, env, stack);
+    return nisp(parse(code), sandbox, env, stack);
 };
