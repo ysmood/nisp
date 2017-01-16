@@ -51,7 +51,8 @@ Here we provide `encode` function to simplify the pain of typing
 quotes and commas. The grammar is a subset of lisp.
 
 ```js
-import { encode, exec } from 'nisp'
+import encode from 'nisp/lib/encode'
+import exec from 'nisp/lib/exec'
 
 var sandbox = {
     "+": (...ns) => ns.reduce((a, b) => a + b),
@@ -104,14 +105,18 @@ Here we implementation a `if` expression The `if` expression is very special,
 it cannot be achieved without ast manipulation.
 
 ```js
-import { encode, exec, macro } from 'nisp'
+import { macro } from 'nisp'
+import encode from 'nisp/lib/encode'
+import exec from 'nisp/lib/exec'
+import args from 'nisp/lib/args'
+import $do from 'nisp/lib/do'
 
 var sandbox = {
     // Most times you don't want to use it.
     "non-lazy-if": (cond, a, b) => cond ? a : b,
 
     // Full lazy.
-    if: macro((ast, sandbox, env, stack) => cond ? a : b),
+    if: args(v => v(0) ? v(1) : v(2)),
 
     // Even half lazy, you have the full control to how lazy the program will be.
     // No matter v(0) is true or false, v(1) will be calculated.
@@ -120,29 +125,28 @@ var sandbox = {
         return v(0) ? v1 : v(2);
     }),
 
-    do: require("nisp/lang/do"),
+    do: $do,
 
-    "+": plain(function (args) {
+    "+" (...args) {
         console.log('calc:', args);
         return args.reduce(function (s, n) { return s + n; });
     })
 };
 
-var exp = nisp.encode`(do
+var exp = encode`(do
     (if           true (+ 1 1) (+ 2 2))
     (non-lazy-if  true (+ 1 1) (+ 2 2))
     (half-lazy-if true (+ 1 1) (+ 2 2))
 )`;
 
-nisp.exec(exp, sandbox);
+exec(exp, sandbox);
 ```
 
 ### Make a complete async language
 
 ```js
 var nisp = require("nisp");
-var plainAsync = require("nisp/fn/plainAsync");
-var Promise = require('yaku');
+var async = require("nisp/lib/async");
 
 function waitNumber (val) {
     return new Promise(function (r) {
@@ -153,13 +157,9 @@ function waitNumber (val) {
 };
 
 var sandbox = {
-    download: plainAsync(function () {
-        return waitNumber(1);
-    }),
+    download: async(() => waitNumber(1))
 
-    "+": plainAsync(function (args) {
-        return args.reduce(function (s, n) { return s + n; });
-    })
+    "+": async((a, b) => a + b)
 };
 
 // Here we can write async code a sync way.
