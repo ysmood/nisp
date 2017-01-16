@@ -48,7 +48,7 @@ function error (msg: string, stack: any[]) {
  */
 function run (ast, sandbox: Sandbox, env, stack: any[]) {
     if (!env) error("nisp env is required", stack);
-    if (!sandbox) error("nisp env.sandbox is required", stack);
+    if (!sandbox) error("nisp sandbox is required", stack);
 
     if (isArray(ast)) {
         var action = run(ast[0], sandbox, env, stack)
