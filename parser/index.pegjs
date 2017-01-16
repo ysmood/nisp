@@ -18,17 +18,18 @@ start
 
 val
     = nisp
-    / 'true'  { return true }
-    / 'false' { return false }
-    / 'null'  { return null }
-    / $number { return parseFloat(text()) }
-    / $name+
-    / quote chars:escaped_char* quote { return chars.join('') }
+    / 'true'
+    / 'false'
+    / 'null'
+    / $number
+    / '@'     { return options.data() }
+    / name+   { return '"' + text() + '"' }
+    / quote chars:escaped_char* quote { return '"' + chars.join('') + '"' }
 
 
 nisp
     = '(' _ head:val tail:sep_val* _ ')'
-    { tail.unshift(head); return tail }
+    { tail.unshift(head); return '[' + tail.join(',') + ']' }
 
 sep_val 'value'
     = _ v:val { return v }

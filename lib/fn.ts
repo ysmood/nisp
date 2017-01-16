@@ -1,19 +1,25 @@
-import run, { Sandbox, macro } from '../core'
+import run, { macro } from '../core'
 
 // ["fn", [<arg1>, <arg2>, ...], <exp>]
-export default macro((fnAst, fnSandbox: Sandbox, env, stack) => {
+export default macro((ctx) => {
     return function () {
+        let { ast } = ctx
         // generate a closure
-        var closure = assign({}, fnSandbox);
+        var closure = assign({}, ctx.sandbox);
         var i, len;
 
         // assign arguments to sandbox
-        len = fnAst[1].length;
+        len = ast[1].length;
         for (i = 0; i < len; i++) {
-            closure[fnAst[1][i]] = arguments[i];
+            closure[ast[1][i]] = arguments[i];
         }
 
-        return run(fnAst[2], closure, env, stack);
+        return run({
+            ast: ast[2],
+            sandbox: closure,
+            env: ctx.env,
+            parent: this
+        });
     };
 })
 

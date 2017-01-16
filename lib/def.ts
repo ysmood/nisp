@@ -1,7 +1,12 @@
-import run, { Sandbox, macro } from '../core'
+import run, { macro } from '../core'
 
-export default macro((ast, sandbox: Sandbox, env, stack) => {
-    var key = run(ast[1], sandbox, env, stack);
+export default macro(ctx => {
+    let { ast, sandbox, env } = ctx
+    var key = run({
+        ast: ast[1], sandbox, env, parent: ctx
+    });
 
-    return sandbox[key] = run(ast[2], sandbox, env, stack);
+    return sandbox[key] = run({
+       ast: ast[2], sandbox, env, parent: ctx
+    });
 });

@@ -4,45 +4,79 @@ export interface Sandbox {
     [name: string]: Fn
 }
 
-export interface Run {
-    (ast, sandbox: Sandbox, env, stack: any[])
-}
-
 export interface Fn {
     (...args)
     macro?: typeof macro
 }
 
+export interface Nisp {
+    (ctx: Context)
+}
+
 // To safely mark a function as macro function
-export function macro (fn: Run) {
+export function macro (fn: Nisp) {
     return Object.defineProperty(fn, 'macro', {
         configurable: false,
         value: macro
     })
 }
 
-function apply (fn: Fn, ast, sandbox, env, stack: any[]) {
-    if (fn.macro === macro)
-        return fn(ast, sandbox, env, stack)
+export interface Context {
+    /**
+     * The abstract syntax tree of nisp.
+     */
+    ast: any
 
-    let args = [], len = ast.length;
+    /**
+     * The interface to the real world.
+     * It defined functions to reduce the data of each expression.
+     * There's only one builtin function `$`, you cannot overwrite it, it is used to
+     * mark raw data, the object follow by it will not be handled by the vm.
+     */
+    sandbox: Sandbox
 
-    for (let i = 1; i < len; i++) {
-        args[i - 1] = run(ast[i], sandbox, env, stack);
-    }
+    /**
+     * The system space of the vm.
+     */
+    env?: any
 
-    return fn.apply(env, args);
+    /**
+     * Parent context, it is used to back trace the execution stack.
+     */
+    parent?: Context
 }
 
-function error (msg: string, stack: any[]) {
+function apply (fn: Fn, ctx: Context) {
+    if (fn.macro === macro)
+        return fn(ctx)
+
+    let args = [], len = ctx.ast.length;
+
+    for (let i = 1; i < len; i++) {
+        args[i - 1] = nisp({
+            ast: ctx.ast[i],
+            sandbox: ctx.sandbox,
+            env: ctx.env,
+            parent: ctx
+        });
+    }
+
+    return fn.apply(ctx, args);
+}
+
+function error (ctx: Context, msg: string) {
     throw new TypeError(
         `[nisp] ${msg}\n`
-        + `stack: ${JSON.stringify(stack)}`
+        + ctx
     );
 }
 
-function run (ast, sandbox: Sandbox, env, stack: any[]) {
-    if (!sandbox) error("sandbox is required", stack);
+function nisp (ctx: Context) {
+    if (!ctx) error(ctx, "ctx is required");
+
+    let { sandbox, ast } = ctx
+
+    if (!sandbox) error(ctx, "sandbox is required");
 
     if (isArray(ast)) {
         let action = ast[0]
@@ -51,19 +85,21 @@ function run (ast, sandbox: Sandbox, env, stack: any[]) {
         if (action === "$")
             return ast[1];
 
-        action = run(action, sandbox, env, stack)
-
-        if (stack) stack = stack.concat(action)
+        action = nisp({
+            ast: action,
+            sandbox: sandbox,
+            env: ctx.env
+        })
 
         if (isFunction(action)) {
-            return apply(action, ast, sandbox, env, ast[0])
+            return apply(action, ctx)
         }
 
         if (action in sandbox) {
             let fn = sandbox[action];
-            return isFunction(fn) ? apply(fn, ast, sandbox, env, stack) : fn;
+            return isFunction(fn) ? apply(fn, ctx) : fn;
         } else {
-            error(`function "${action}" is undefined`, stack);
+            error(ctx, `function "${action}" is undefined`);
         }
     } else {
         return ast;
@@ -72,16 +108,5 @@ function run (ast, sandbox: Sandbox, env, stack: any[]) {
 
 /**
  * Eval an nisp ast
- * @param {any} ast The abstract syntax tree of nisp
- * @param {Sandbox} sandbox The interface to the real world.
- * It defined functions to reduce the data of each expression.
- * There's only one builtin function `$`, you cannot overwrite it, it is used to
- * mark raw data, the object follow by it will not be handled by the vm.
- * @param {Object} env The system space of the vm.
- * @param {any[]} stack Stack info, if you want to boost the performance
- * You can pass in `null` to disable the stack tracing.
- * @return {any}
  */
-export default function (ast, sandbox: Sandbox, env?, stack = []) {
-    return run(ast, sandbox, env, stack);
-};
+export default nisp

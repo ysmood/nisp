@@ -1,25 +1,29 @@
+import { parse } from '../parser'
 
 const isBuffer = obj => (typeof Buffer !== "undefined") && Buffer.isBuffer(obj);
 
-const btoa = value => (typeof Buffer === "undefined") ? btoa(value) : value.toString("base64");
+const $btoa = value => (typeof Buffer === "undefined") ? btoa(value) : value.toString("base64");
 
-const escapeQuoteReg = /'/g
+let dataListIndex = 0
+let dataList: any[]
+function data () {
+    let val = dataList[dataListIndex++]
 
-function json (str) {
-    return JSON.stringify(str).replace(escapeQuoteReg, "''")
+    if (isBuffer(val)) {
+        return `["atob", "${$btoa(val)}"]`;
+    } else {
+        return JSON.stringify(val)
+    }
 }
 
-export default function (literals: TemplateStringsArray, ...placeHolder) {
+export default function (literals: TemplateStringsArray, ...list): string {
     var str = literals[0];
     for (var i = 1 ; i < literals.length ; ++ i) {
-        var val = placeHolder[i - 1];
-        if (isBuffer(val)) {
-            str += `(atob '${btoa(val)}')`;
-        } else {
-            str += `(json '${json(val)}')`
-        }
-        str += literals[i]
+        // var val = dataList[i - 1];
+        str += '@' + literals[i]
     }
 
-    return str;
+    dataListIndex = 0
+    dataList = list
+    return parse(str, { data })
 };
