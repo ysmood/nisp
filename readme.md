@@ -55,8 +55,8 @@ import encode from 'nisp/lib/encode'
 import exec from 'nisp/lib/exec'
 
 var sandbox = {
-    "+": (...ns) => ns.reduce((a, b) => a + b),
-    "++": (...ns) => ns.map(a => a + 1)
+    "+": ns => ns.reduce((a, b) => a + b),
+    "++": ns => ns.map(a => a + 1)
 };
 
 var data = [1, 2, 3]
