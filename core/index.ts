@@ -36,13 +36,13 @@ function apply (fn: Fn, ast, sandbox, env, stack: any[]) {
 
 function error (msg: string, stack: any[]) {
     throw new TypeError(
-        `[nisp] ${msg}\nstack: ${JSON.stringify(stack)}`
+        `[nisp] ${msg}\n`
+        + `stack: ${JSON.stringify(stack)}`
     );
 }
 
 function run (ast, sandbox: Sandbox, env, stack: any[]) {
-    if (!env) error("nisp env is required", stack);
-    if (!sandbox) error("nisp sandbox is required", stack);
+    if (!sandbox) error("sandbox is required", stack);
 
     if (isArray(ast)) {
         let action = ast[0]
@@ -82,6 +82,6 @@ function run (ast, sandbox: Sandbox, env, stack: any[]) {
  * You can pass in `null` to disable the stack tracing.
  * @return {any}
  */
-export default function (ast, sandbox: Sandbox, env = {}, stack = []) {
+export default function (ast, sandbox: Sandbox, env?, stack = []) {
     return run(ast, sandbox, env, stack);
 };
