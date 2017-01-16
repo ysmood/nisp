@@ -1,7 +1,7 @@
 import { isArray, isFunction } from './utils'
 
 export interface Sandbox {
-    [name: string]: any
+    [name: string]: Fn
 }
 
 export interface Run {
