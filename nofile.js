@@ -15,4 +15,4 @@ module.exports = function (task) {
     task("test", function () {
         return kit.spawn("junit", ["test/basic.js"]);
     });
-};
+}

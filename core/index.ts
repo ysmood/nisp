@@ -4,17 +4,21 @@ export interface Sandbox {
     [name: string]: any
 }
 
+export interface Run {
+    (ast, sandbox: Sandbox, env, stack: any[])
+}
+
 export interface Fn {
     (...args)
     macro?: typeof macro
 }
 
 // To safely mark a function as macro function
-export function macro (fn: typeof run) {
+export function macro (fn: Run) {
     return Object.defineProperty(fn, 'macro', {
         configurable: false,
         value: macro
-    }) as Fn
+    })
 }
 
 function apply (fn: Fn, ast, sandbox, env, stack: any[]) {
