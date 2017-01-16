@@ -74,6 +74,24 @@ export default function (it) {
         return it.eq(nisp(['+', 1, 2], sandbox), 3);
     });
 
+    it("err stack", function () {
+        var sandbox = {
+            '+': args((arg) => {
+                return arg(0) + arg(1);
+            })
+        };
+
+        let ast = ['+', 1, ['+', 1, ['foo']]]
+
+        try {
+            nisp(ast, sandbox)
+        } catch (err) {
+            return it.eq(err.message.indexOf('["+","+","foo"]'), 42)
+        }
+
+        throw Error('err')
+    });
+
     it("def", function () {
         var sandbox = {
             do: $do,

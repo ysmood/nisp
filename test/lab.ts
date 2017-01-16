@@ -1,10 +1,5 @@
-/*eslint-disable */
-
-import nisp from '../core'
 import encode from '../lib/encode'
 import exec from '../lib/exec'
-import list from '../lib/list'
-import fn from '../lib/fn'
 import $do from '../lib/do'
 import def from '../lib/def'
 

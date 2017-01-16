@@ -4,9 +4,9 @@ let root = typeof window === 'object' ? window : global
 export default function (fn, customPromise) {
     var P = customPromise || root['Promise']; // eslint-disable-line
 
-    return function () {
-        return P.all(arguments).then((syncedArgs) => {
-            return fn.apply(this, syncedArgs);
-        });
+    return function (...args) {
+        return P.all(args).then((syncedArgs) =>
+            fn.apply(this, syncedArgs)
+        );
     };
 };

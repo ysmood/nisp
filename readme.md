@@ -16,7 +16,7 @@ You may ask what it really does? Yes, it does nothing. And that is exactly what 
 protocol needs. I use it to expose composable api.
 
 The ast of nisp is plain JSON, the js implementation is only around 50 lines of code,
-so it will be very to port nisp to other languages. 
+so it will be very to port nisp to other languages.
 No closure or complex data type is required, even plain C can implement nisp easily.
 
 Everything inside nisp is a function, it's very easy to keep everything type safe, plus the composable nature,
@@ -25,6 +25,8 @@ nisp is an ideal middle layer to carry query or RPC.
 # Quick Start
 
 For more examples, read the unit test of this project.
+
+Try it online: https://runkit.com/ysmood/nisp-demo
 
 
 ### Define your own function
@@ -35,10 +37,10 @@ Here the user can only use it as a sum-only-calculator.
 import nisp from 'nisp'
 
 var sandbox = {
-    "+": (a, b) => a + b
+    '+': (a, b) => a + b
 };
 
-var exp = ["+", 1, 2];
+var exp = ['+', 1, ['+', 1, 1]];
 
 nisp(exp, sandbox); // => 3
 ```

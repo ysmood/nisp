@@ -2,6 +2,8 @@
     "compilerOptions": {
         "target": "es3",
         "module": "commonjs",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "declaration": true
     }
 }

@@ -1,4 +1,4 @@
-import run, { Sandbox, macro } from '../core'
+import run, { macro } from '../core'
 
 export default function (fn) {
     return macro((ast, sandbox, env, stack) => {

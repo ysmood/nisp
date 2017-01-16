@@ -5,7 +5,7 @@ export default macro((fnAst, fnSandbox: Sandbox, env, stack) => {
     return function () {
         // generate a closure
         var closure = assign({}, fnSandbox);
-        var i, len, ret;
+        var i, len;
 
         // assign arguments to sandbox
         len = fnAst[1].length;
