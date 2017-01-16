@@ -6,7 +6,7 @@
 The interesting part is that nisp is designed to be non-turing-complete.
 
 You have the full control of the vm and ast,
-you can decide what the language will have, or how lazy the expresssion will be.
+you can decide what the language will have, or how lazy the expression will be.
 for example, if you don't expose the `if` exp the user can never express if logic.
 
 By default nisp only presents the meta data of the program itself. So by default
