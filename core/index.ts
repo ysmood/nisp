@@ -72,9 +72,9 @@ function run (ast, sandbox: Sandbox, env, stack: any[]) {
 
 /**
  * Eval an nisp ast
- * @param {any} ast A freezed world, pure and simple.
- * @param {Sandbox} sandbox The interface that directly connects to the real world.
- * It defined how to transform the freezed world into the real world.
+ * @param {any} ast The abstract syntax tree of nisp
+ * @param {Sandbox} sandbox The interface to the real world.
+ * It defined functions to reduce the data of each expression.
  * There's only one builtin function `$`, you cannot overwrite it, it is used to
  * mark raw data, the object follow by it will not be handled by the vm.
  * @param {Object} env The system space of the vm.
