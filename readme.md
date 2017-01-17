@@ -65,7 +65,7 @@ var data = [1, 2, 3]
 
 var exp = encode`(+ (++ ${data}))`
 
-exec(JSON.parse(exp), sandbox); // => 9
+exec(exp, sandbox); // => 9
 ```
 
 
@@ -140,7 +140,7 @@ var exp = encode`(do
     (half-lazy-if true  (+ 1 1) (+ 2 2))
 )`;
 
-exec(JSON.parse(exp), sandbox);
+exec(exp, sandbox);
 ```
 
 ### Make a complete async language

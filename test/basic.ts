@@ -214,7 +214,7 @@ export default function (it) {
             (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
         )`;
 
-        return it.eq(exec(JSON.parse(code), sandbox), "3str0");
+        return it.eq(exec(code, sandbox), "3str0");
     });
 
     it("grammar error", function () {

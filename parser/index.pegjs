@@ -21,15 +21,15 @@ val
     / 'true'
     / 'false'
     / 'null'
-    / $number
+    / $number { return parseFloat(text()) }
     / '@'     { return options.data() }
-    / name+   { return '"' + text() + '"' }
-    / quote chars:escaped_char* quote { return '"' + chars.join('') + '"' }
+    / $name+
+    / quote chars:escaped_char* quote { return chars.join('') }
 
 
 nisp
     = '(' _ head:val tail:sep_val* _ ')'
-    { tail.unshift(head); return '[' + tail.join(',') + ']' }
+    { tail.unshift(head); return tail }
 
 sep_val 'value'
     = _ v:val { return v }

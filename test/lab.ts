@@ -22,9 +22,7 @@ var sandbox = {
 
 console.log(
     exec(
-        JSON.parse(
-            encode`(+ 1 2 ${new Buffer([97])})`
-        ),
+        encode`(+ 1 2 ${new Buffer([97])})`,
         sandbox
     )
 )
