@@ -22,27 +22,9 @@ export function macro (fn: Nisp) {
 }
 
 export interface Context {
-    /**
-     * The abstract syntax tree of nisp.
-     */
     ast: any
-
-    /**
-     * The interface to the real world.
-     * It defined functions to reduce the data of each expression.
-     * There's only one builtin function `$`, you cannot overwrite it, it is used to
-     * mark raw data, the object follow by it will not be handled by the vm.
-     */
     sandbox: Sandbox
-
-    /**
-     * The system space of the vm.
-     */
     env?: any
-
-    /**
-     * Parent context, it is used to back trace the execution stack.
-     */
     parent?: Context
 }
 
@@ -67,7 +49,7 @@ function apply (fn: Fn, ctx: Context) {
 /**
  * Throw error with stack info
  */
-export function error (ctx: Context, msg: string) {
+function error (ctx: Context, msg: string) {
     let stack = []
     let node = ctx
 

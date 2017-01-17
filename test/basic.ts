@@ -12,7 +12,6 @@ import $if from "../lib/if"
 import def from "../lib/def"
 import fn from "../lib/fn"
 import encode from '../lib/encode'
-import exec from '../lib/exec'
 
 
 let add = function (...args) {
@@ -201,6 +200,7 @@ export default function (it) {
         var sandbox = {
             do: $do,
             "+": add,
+            $,
             "get": function (a, b) {
                 return a[b];
             },
@@ -214,7 +214,7 @@ export default function (it) {
             (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
         )`;
 
-        return it.eq(exec(code, sandbox), "3str0");
+        return it.eq(nisp(code, sandbox), "3str0");
     });
 
     it("grammar error", function () {

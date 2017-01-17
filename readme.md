@@ -53,10 +53,12 @@ Here we provide `encode` function to simplify the pain of typing
 quotes and commas. The grammar is a subset of lisp.
 
 ```js
+import nisp from 'nisp'
 import encode from 'nisp/lib/encode'
-import exec from 'nisp/lib/exec'
+import $ from 'nisp/lib/$'
 
 var sandbox = {
+    $, // raw data
     "+": ns => ns.reduce((a, b) => a + b),
     "++": ns => ns.map(a => a + 1)
 };
@@ -65,7 +67,7 @@ var data = [1, 2, 3]
 
 var exp = encode`(+ (++ ${data}))`
 
-exec(exp, sandbox); // => 9
+nisp(exp, sandbox); // => 9
 ```
 
 
@@ -73,6 +75,7 @@ exec(exp, sandbox); // => 9
 
 ```js
 import nisp from 'nisp'
+import error from 'nisp/lib/error'
 
 var sandbox = {
     concat (...args) {
@@ -80,10 +83,10 @@ var sandbox = {
     },
 
     getAnimals () {
-        if (this.session.isZooKeeper)
+        if (this.env.isZooKeeper)
             return ['cat', 'dog'];
         else
-            throw new Error("Not Allowed");
+            error(this, "Not Allowed");
     },
 
     getFruits () {
@@ -107,12 +110,15 @@ Here we implementation a `if` expression The `if` expression is very special,
 it cannot be achieved without ast manipulation.
 
 ```js
+import nisp from 'nisp'
 import encode from 'nisp/lib/encode'
-import exec from 'nisp/lib/exec'
+import $ from 'nisp/lib/$'
 import args from 'nisp/lib/args'
 import $do from 'nisp/lib/do'
 
 var sandbox = {
+    $,
+
     // Most times you don't want to use it.
     "non-lazy-if": (cond, a, b) => cond ? a : b,
 
@@ -140,7 +146,7 @@ var exp = encode`(do
     (half-lazy-if true  (+ 1 1) (+ 2 2))
 )`;
 
-exec(exp, sandbox);
+nisp(exp, sandbox);
 ```
 
 ### Make a complete async language
@@ -173,9 +179,6 @@ nisp(exp, sandbox).then(function (out) {
 ```
 
 
-
 # API
 
-TODO...
-
-Checkout the files in `src` folder.
+The project is written in typescript, all main APIs are typed and commented.
