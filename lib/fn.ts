@@ -14,12 +14,7 @@ export default macro((ctx) => {
             closure[ast[1][i]] = arguments[i];
         }
 
-        return run({
-            ast: ast[2],
-            sandbox: closure,
-            env: ctx.env,
-            parent: this
-        });
+        return run(ast[2], closure, ctx.env, this);
     };
 })
 

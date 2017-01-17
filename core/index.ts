@@ -64,10 +64,21 @@ function apply (fn: Fn, ctx: Context) {
     return fn.apply(ctx, args);
 }
 
-function error (ctx: Context, msg: string) {
+/**
+ * Throw error with stack info
+ */
+export function error (ctx: Context, msg: string) {
+    let stack = []
+    let node = ctx
+
+    while(node) {
+        stack.push(node.ast[0])
+        node = node.parent
+    }
+
     throw new TypeError(
         `[nisp] ${msg}\n`
-        + ctx
+        + `stack: ` + JSON.stringify(stack, null, 4)
     );
 }
 
@@ -80,10 +91,6 @@ function nisp (ctx: Context) {
 
     if (isArray(ast)) {
         let action = ast[0]
-
-        // handle raw data, this is the only builtin function
-        if (action === "$")
-            return ast[1];
 
         action = nisp({
             ast: action,
@@ -106,7 +113,19 @@ function nisp (ctx: Context) {
     }
 }
 
+
 /**
  * Eval an nisp ast
+ * @param {any} ast The abstract syntax tree of nisp.
+ * It's a common flaw that array cannot carry plain data,
+ * such as `['foo', [1,2]]`, The `1` will be treat as a function name.
+ * So it's recommended to use object to carry plain data,
+ * such as translate the example to `['foo', { data: [1, 2] }]`.
+ * @param {Sandbox} sandbox The interface to the real world.
+ * It defined functions to reduce the data of each expression.
+ * @param {any} env The system space of the vm.
+ * @param {any} parent Parent context, it is used to back trace the execution stack.
  */
-export default nisp
+export default function (ast: any, sandbox: Sandbox, env?, parent?) {
+    return nisp({ ast, sandbox, env, parent })
+}

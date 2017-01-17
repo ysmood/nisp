@@ -1,5 +1,6 @@
-import nisp from '../core'
+// import nisp from '../core'
 import encode from '../lib/encode'
+import exec from '../lib/exec'
 import $do from '../lib/do'
 import def from '../lib/def'
 
@@ -19,13 +20,11 @@ var sandbox = {
     def
 };
 
-var json = {a: [1]};
-
-var code = encode`(do
-    (def a ${json})
-    (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
-)`;
-
-console.log(nisp({
-    ast: JSON.parse(code), sandbox
-}))
+console.log(
+    exec(
+        JSON.parse(
+            encode`(+ 1 2 ${new Buffer([97])})`
+        ),
+        sandbox
+    )
+)

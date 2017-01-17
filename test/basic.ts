@@ -1,8 +1,8 @@
-import nisp from "../core"
+import nisp, { Context } from "../core"
 import Promise from "yaku"
 import * as sleep from "yaku/lib/sleep"
-import $ from "../lib/$"
 
+import $ from "../lib/$"
 import $do from "../lib/do"
 import list from "../lib/list"
 import dict from "../lib/dict"
@@ -11,8 +11,8 @@ import args from '../lib/args'
 import $if from "../lib/if"
 import def from "../lib/def"
 import fn from "../lib/fn"
-import exec from "../lib/exec"
-import encode from "../lib/encode"
+import encode from '../lib/encode'
+import exec from '../lib/exec'
 
 
 let add = function (...args) {
@@ -43,19 +43,18 @@ export default function (it) {
             nisp([1, 2], {});
             throw new Error("should throw error");
         } catch (err) {
-            return it.eq(err.message, `[nisp] function "1" is undefined\nstack: [1]`);
+            return it.eq(err.message, `[nisp] function "1" is undefined\nstack: [\n    1\n]`);
         }
     });
 
     it("plain", function () {
-        return it.eq(nisp($([1, "ok"]), {
-        }), [1, "ok"]);
+        return it.eq(nisp(['$', [1, "ok"]], { $ }), [1, "ok"]);
     });
 
     it("env", function () {
         var sandbox = {
-            env: function () {
-                return this;
+            env: function (this: Context) {
+                return this.env;
             }
         };
 
@@ -86,7 +85,7 @@ export default function (it) {
         try {
             nisp(ast, sandbox)
         } catch (err) {
-            return it.eq(err.message.indexOf('["+","+","foo"]'), 42)
+            return it.eq(err.message.indexOf('[nisp] function "foo" is undefined'), 0)
         }
 
         throw Error('err')
@@ -183,8 +182,8 @@ export default function (it) {
 
     it("async", function () {
         var sandbox = {
-            "get": async(function (v) {
-                return sleep(13, v + this);
+            "get": async(function (this: Context, v) {
+                return sleep(13, v + this.env);
             }, Promise),
             "+": async(function (a, b) {
                 return sleep(13).then(() => {
@@ -215,27 +214,14 @@ export default function (it) {
             (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
         )`;
 
-        return it.eq(exec(code, sandbox), "3str0");
+        return it.eq(exec(JSON.parse(code), sandbox), "3str0");
     });
 
     it("grammar error", function () {
-        var sandbox = {
-            "+": add,
-            "get": function (a, b) {
-                return a[b];
-            }
-        };
-
-        var json = { a : 1 };
-
-        var code = encode`
-            (+ (get ${json} "a") 2
-        `
-
         try {
-            it.eq(exec(code, sandbox), 3);
+            encode`(+ (get 123 "a") 2`
         } catch (err) {
-            return it.eq(err.message, `Expected ")" but end of input found.`);
+            return it.eq(err.message, `Expected ")" or value but end of input found.`);
         }
 
         throw new Error();

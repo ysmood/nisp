@@ -10,16 +10,15 @@ function data () {
     let val = dataList[dataListIndex++]
 
     if (isBuffer(val)) {
-        return `["atob", "${$btoa(val)}"]`;
+        return `["atob","${$btoa(val)}"]`;
     } else {
-        return JSON.stringify(val)
+        return `["$",${JSON.stringify(val)}]`
     }
 }
 
 export default function (literals: TemplateStringsArray, ...list): string {
     var str = literals[0];
     for (var i = 1 ; i < literals.length ; ++ i) {
-        // var val = dataList[i - 1];
         str += '@' + literals[i]
     }
 
