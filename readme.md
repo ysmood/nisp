@@ -65,7 +65,7 @@ var data = [1, 2, 3]
 
 var exp = encode`(+ (++ ${data}))`
 
-exec(exp, sandbox); // => 9
+exec(JSON.parse(exp), sandbox); // => 9
 ```
 
 
@@ -107,7 +107,6 @@ Here we implementation a `if` expression The `if` expression is very special,
 it cannot be achieved without ast manipulation.
 
 ```js
-import { macro } from 'nisp'
 import encode from 'nisp/lib/encode'
 import exec from 'nisp/lib/exec'
 import args from 'nisp/lib/args'
@@ -136,12 +135,12 @@ var sandbox = {
 };
 
 var exp = encode`(do
-    (if           true (+ 1 1) (+ 2 2))
-    (non-lazy-if  true (+ 1 1) (+ 2 2))
-    (half-lazy-if true (+ 1 1) (+ 2 2))
+    (if           true  (+ 1 1) (+ 2 2))
+    (non-lazy-if  false (+ 1 1) (+ 2 2))
+    (half-lazy-if true  (+ 1 1) (+ 2 2))
 )`;
 
-exec(exp, sandbox);
+exec(JSON.parse(exp), sandbox);
 ```
 
 ### Make a complete async language
