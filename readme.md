@@ -74,8 +74,7 @@ nisp(exp, sandbox); // => 9
 ### Composable RPC
 
 ```js
-import nisp from 'nisp'
-import error from 'nisp/lib/error'
+import nisp, { error } from 'nisp'
 
 var sandbox = {
     concat (...args) {
@@ -86,7 +85,7 @@ var sandbox = {
         if (this.env.isZooKeeper)
             return ['cat', 'dog'];
         else
-            error(this, "Not Allowed");
+            error(this, "Not Allowed"); // it will log error stacks
     },
 
     getFruits () {

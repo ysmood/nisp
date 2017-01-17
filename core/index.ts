@@ -49,7 +49,7 @@ function apply (fn: Fn, ctx: Context) {
 /**
  * Throw error with stack info
  */
-function error (ctx: Context, msg: string) {
+export let error = function (ctx: Context, msg: string, err: any = Error) {
     let stack = []
     let node = ctx
 
@@ -58,18 +58,18 @@ function error (ctx: Context, msg: string) {
         node = node.parent
     }
 
-    throw new TypeError(
+    throw new err(
         `[nisp] ${msg}\n`
         + `stack: ` + JSON.stringify(stack, null, 4)
-    );
+    )
 }
 
 function nisp (ctx: Context) {
-    if (!ctx) error(ctx, "ctx is required");
+    if (!ctx) error(ctx, "ctx is required", TypeError);
 
     let { sandbox, ast } = ctx
 
-    if (!sandbox) error(ctx, "sandbox is required");
+    if (!sandbox) error(ctx, "sandbox is required", TypeError);
 
     if (isArray(ast)) {
         let action = ast[0]
@@ -88,7 +88,7 @@ function nisp (ctx: Context) {
             let fn = sandbox[action];
             return isFunction(fn) ? apply(fn, ctx) : fn;
         } else {
-            error(ctx, `function "${action}" is undefined`);
+            error(ctx, `function "${action}" is undefined`, TypeError);
         }
     } else {
         return ast;

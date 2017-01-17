@@ -1,4 +1,4 @@
-import nisp, { Context } from "../core"
+import nisp, { Context, error } from "../core"
 import Promise from "yaku"
 import * as sleep from "yaku/lib/sleep"
 
@@ -60,6 +60,22 @@ export default function (it) {
         var env = "ok";
 
         return it.eq(nisp(["env"], sandbox, env), "ok");
+    });
+
+    it("throw error", function () {
+        var sandbox = {
+            foo: function (this: Context) {
+                return error(this, 'err');
+            }
+        };
+
+        try {
+            nisp(["foo"], sandbox)
+        } catch (err) {
+            return it.eq(err.message, "[nisp] err\nstack: [\n    \"foo\"\n]")
+        }
+
+        throw new Error()
     });
 
     it("args", function () {
