@@ -199,7 +199,7 @@ export default function (it) {
         var sandbox = {
             "get": async(function (this: Context, v) {
                 return sleep(13, v + this.env);
-            }, Promise),
+            }),
             "+": async(function (a, b) {
                 return sleep(13).then(() => {
                     return a + b;
