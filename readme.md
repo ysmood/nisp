@@ -3,7 +3,7 @@
 [![NPM version](https://badge.fury.io/js/nisp.svg)](http://badge.fury.io/js/nisp) [![Build Status](https://travis-ci.org/ysmood/nisp.svg)](https://travis-ci.org/ysmood/nisp) [![Deps Up to Date](https://david-dm.org/ysmood/nisp.svg?style=flat)](https://david-dm.org/ysmood/nisp)
 
 
-The interesting part is that nisp is designed to be non-turing-complete.
+The interesting part is that nisp is designed to be turing incomplete.
 
 You have the full control of the vm and ast,
 you can decide what the language will have, or how lazy the expression will be.
