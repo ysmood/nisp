@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "A language that for easily build cross-language language",
   "main": "core/index",
   "scripts": {
@@ -29,9 +29,9 @@
   "devDependencies": {
     "@types/node": "7.0.0",
     "junit": "1.4.9",
-    "nokit": "0.23.18",
+    "nokit": "0.23.22",
     "pegjs": "0.10.0",
-    "typescript": "2.1.5",
+    "typescript": "2.1.6",
     "yaku": "0.17.8"
   }
 }
