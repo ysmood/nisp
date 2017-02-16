@@ -198,7 +198,8 @@ export default function (it) {
     it("async", function () {
         var sandbox = {
             "get": async(function (this: Context, v) {
-                return sleep(13, v + this.env);
+                this.env.c = Math.pow(this.env.c, v)
+                return sleep(v, this.env.c)
             }),
             "+": async(function (a, b) {
                 return sleep(13).then(() => {
@@ -207,9 +208,9 @@ export default function (it) {
             }, Promise)
         };
 
-        var ast = ["+", ["get", 1], ["get", 2]];
+        var ast = ["+", ["get", 3], ["get", 2]];
 
-        return it.eq(nisp(ast, sandbox, 1), 5);
+        return it.eq(nisp(ast, sandbox, { c: 2 }), 72);
     });
 
     it("grammar", function () {

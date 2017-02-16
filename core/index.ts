@@ -22,7 +22,7 @@ export function macro (fn: Nisp) {
 }
 
 export interface Context {
-    ast: any
+    ast: any[]
     sandbox: Sandbox
     env?: any
     parent?: Context
@@ -108,6 +108,6 @@ function nisp (ctx: Context) {
  * @param {any} env The system space of the vm.
  * @param {any} parent Parent context, it is used to back trace the execution stack.
  */
-export default function (ast: any, sandbox: Sandbox, env?, parent?) {
+export default function (ast: any, sandbox: Sandbox, env?, parent?: Context) {
     return nisp({ ast, sandbox, env, parent })
 }
