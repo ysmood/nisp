@@ -234,6 +234,12 @@ export default function (it) {
         return it.eq(nisp(code, sandbox), "3str0");
     });
 
+    it("grammar data type", function () {
+        var json = encode`(1 test 'a''a' true false null)`;
+
+        return it.eq(json, [1, 'test', `a'a`, true, false, null]);
+    });
+
     it("grammar error", function () {
         try {
             encode`(+ (get 123 "a") 2`

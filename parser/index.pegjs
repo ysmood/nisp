@@ -1,3 +1,4 @@
+
 /*
  * Nisp Encode Grammar
  * It is a very limited data format to mis lisp and json.
@@ -10,6 +11,12 @@
  *
  *     # escape "We'll", double each single quote
  *     'We''ll'
+ *     
+ *     # json data type: number, string, true, false, null
+ *     (1 test true false null)
+ *
+ *     # data embed placeholder
+ *     @
  * )
  */
 
@@ -18,9 +25,9 @@ start
 
 val
     = nisp
-    / 'true'
-    / 'false'
-    / 'null'
+    / 'true'  { return true }
+    / 'false' { return false }
+    / 'null'  { return null }
     / $number { return parseFloat(text()) }
     / '@'     { return options.data() }
     / $name+
