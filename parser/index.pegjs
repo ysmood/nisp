@@ -10,8 +10,9 @@
  *     (bar 'test')
  *
  *     # escape "We'll", double each single quote
+ *     # doesn't support escape with slash such as '\n', '\x', etc
  *     'We''ll'
- *     
+ *
  *     # json data type: number, string, true, false, null
  *     (1 test true false null)
  *
