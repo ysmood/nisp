@@ -2,73 +2,79 @@ type Callback = (type: string, obj: any, path: Path) => void
 type Path = (string | number)[]
 
 function walk (obj, cb: Callback, path: Path, nodes: any[]) {
-    if (nodes.indexOf(obj) > -1)
-        throw new TypeError('cycled object')
-
     let type = typeof obj
 
-    switch (type) {
-    case 'undefined':
-    case 'boolean':
-    case 'number':
-    case 'string':
-    case 'symbol':
-    case 'function':
-        cb(type, obj, path)
-        break;
-
-    case 'object':
+    if (type === 'object') {
         if (obj === null) {
             cb('null', obj, path)
-        } else if (typeof obj.length === 'number') {
-            cb('array-start', obj, path)
-            for (let i = 0; i < obj.length; i++) {
-                let node = obj[i]
-                nodes.push(node)
-                path = path.concat(i)
-
-                if (i === 0)
-                    cb('array-first', node, path)
-                else
-                    cb('array', node, path)
-
-                walk(node, cb, path, nodes)
-            }
-            cb('array-end', obj, path)
         } else {
-            cb('object-start', obj, path)
-            let keys = Object.keys(obj)
-            for (let i = 0; i < obj.length; i++) {
-                let key = keys[i]
-                let node = obj[key]
-                nodes.push(node)
-                path = path.concat(i)
+            if (nodes.indexOf(obj) > -1)
+                throw new TypeError('cycled object')
+            else
+                nodes.push(obj)
 
-                if (i === 0)
-                    cb('object-first', node, path)
-                else
-                    cb('object', node, path)
+            if (typeof obj.length === 'number') {
+                cb('array-start', obj, path)
+                for (let i = 0; i < obj.length; i++) {
+                    let node = obj[i]
+                    let p = path.concat(i)
 
-                walk(node, cb, path, nodes)
+                    if (i === 0)
+                        cb('array-first', node, p)
+                    else
+                        cb('array', node, p)
+
+                    walk(node, cb, p, nodes)
+                }
+                cb('array-end', obj, path)
+            } else {
+                cb('object-start', obj, path)
+                let keys = Object.keys(obj)
+                for (let i = 0; i < keys.length; i++) {
+                    let key = keys[i]
+                    let node = obj[key]
+                    let p = path.concat(key)
+
+                    if (i === 0)
+                        cb('object-first', node, p)
+                    else
+                        cb('object', node, p)
+
+                    walk(node, cb, p, nodes)
+                }
+                cb('object-end', obj, path)
             }
-            cb('object-end', obj, path)
-       }
-        break;
-
-    default:
-        throw new TypeError('not supported type')
+        }
+    } else {
+        cb(type, obj, path)
     }
 }
 
 let ret: string
 let path: string[]
 let nodes: any[]
+let listSymbol: string
+let dictSymbol: string
 
-let space = len => '                                                '.slice(0, len * 4)
+let spaces = {}
+
+let space = len => {
+    if (len in spaces) {
+        return spaces[len]
+    } else {
+        let s = ''
+        len *= 4
+        for (let i = 0; i < len; i++) {
+            s += ' '
+        }
+        return spaces[len] = s
+    }
+}
 let last = arr => arr[arr.length - 1]
 
 function gen (type: string, obj: any, path: Path) {
     switch (type) {
+    case 'null':
     case 'undefined':
     case 'boolean':
     case 'number':
@@ -79,45 +85,42 @@ function gen (type: string, obj: any, path: Path) {
         break;
 
     case 'object-start':
-        ret += space(path.length) + '{\n'
+        ret += '(' + dictSymbol
         break
 
     case 'object-first':
-        ret += space(path.length) + last(path) + ': '
-        break
-
     case 'object':
-        ret += ',\n' + space(path.length) + last(path) + ': '
+        ret += '\n' + space(path.length) + last(path) + ' '
         break
 
     case 'object-end':
-        ret += space(path.length) + '\n}'
+        ret += '\n' + space(path.length) + ')'
         break
 
     case 'array-start':
-        ret += space(path.length) + '[\n'
+        ret += '(' + listSymbol
         break
 
     case 'array-first':
-        ret += space(path.length) + last(path) + ': '
-        break
-
     case 'array':
-        ret += ',\n' + space(path.length) + last(path) + ': '
+        ret += '\n' + space(path.length)
         break
 
     case 'array-end':
-        ret += space(path.length) + '\n]'
+        ret += '\n' + space(path.length) + ')'
         break
 
     default:
+        throw new TypeError('unknown type: ' + type)
     }
 }
 
-export default function (obj): string {
+export default function (obj, list = '|', dict = ':'): string {
     ret = ''
     path = []
     nodes = []
+    listSymbol = list
+    dictSymbol = dict
 
     walk(obj, gen, path, nodes)
 

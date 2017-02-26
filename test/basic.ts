@@ -12,6 +12,7 @@ import $if from "../lib/if"
 import def from "../lib/def"
 import fn from "../lib/fn"
 import encode from '../lib/encode'
+import decode from '../lib/decode'
 
 
 let add = function (...args) {
@@ -128,22 +129,22 @@ export default function (it) {
 
     it("list", function () {
         var sandbox = {
-            "list": list,
+            "|": list,
             "+": add
         };
 
-        var ast = ["list", 1, ["+", 1, 1], 3];
+        var ast = ["|", 1, ["+", 1, 1], 3];
 
         return it.eq(nisp(ast, sandbox), [1, 2, 3]);
     });
 
     it("dict", function () {
         var sandbox = {
-            "dict": dict,
+            ":": dict,
             "+": add
         };
 
-        var ast = ["dict",
+        var ast = [":",
             "a", 1,
             "b", ["+", 1, 1],
             "c", 3
@@ -212,6 +213,37 @@ export default function (it) {
 
         return it.eq(nisp(ast, sandbox, { c: 2 }), 72);
     });
+
+    it('decode', function () {
+        let ret = decode({
+            a: 10,
+            b: 20,
+            c: -3.101,
+            d: [1,
+                true,
+                false,
+                null,
+                2,
+                { s: 1 }
+            ]
+        })
+
+        return it.eq(ret, `(:
+            a 10
+            b 20
+            c -3.101
+            d (|
+                1
+                true
+                false
+                null
+                2
+                (:
+                    s 1
+                )
+            )
+        )`.replace(/^        /mg, ''))
+    })
 
     it("grammar", function () {
         var sandbox = {
