@@ -215,34 +215,30 @@ export default function (it) {
     });
 
     it('decode', function () {
-        let ret = decode({
+        let obj = {
             a: 10,
             b: 20,
             c: -3.101,
             d: [1,
                 true,
+                'true',
                 false,
+                'false',
                 null,
+                'null',
+                `te'st`,
                 2,
                 { s: 1 }
             ]
-        })
+        }
+        let ast = encode([decode(obj)] as any)
 
-        return it.eq(ret, `(:
-            a 10
-            b 20
-            c -3.101
-            d (|
-                1
-                true
-                false
-                null
-                2
-                (:
-                    s 1
-                )
-            )
-        )`.replace(/^        /mg, ''))
+        var sandbox = {
+            ':': dict,
+            '|': list
+        }
+
+        return it.eq(nisp(ast, sandbox), obj)
     })
 
     it("grammar", function () {

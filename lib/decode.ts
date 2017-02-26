@@ -53,6 +53,7 @@ function walk (obj, cb: Callback, path: Path, nodes: any[]) {
 let ret: string
 let path: string[]
 let nodes: any[]
+let regStrEscape = /'/g
 let listSymbol: string
 let dictSymbol: string
 
@@ -78,11 +79,14 @@ function gen (type: string, obj: any, path: Path) {
     case 'undefined':
     case 'boolean':
     case 'number':
-    case 'string':
     case 'symbol':
     case 'function':
         ret += obj + ''
         break;
+
+    case 'string':
+        ret += `'${obj.replace(regStrEscape, "''")}'`
+       break;
 
     case 'object-start':
         ret += '(' + dictSymbol
