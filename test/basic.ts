@@ -226,7 +226,7 @@ export default function (it) {
                 'false',
                 null,
                 'null',
-                `te'st`,
+                `'\r\n"`,
                 2,
                 { s: 1 }
             ]
@@ -263,7 +263,7 @@ export default function (it) {
     });
 
     it("grammar data type", function () {
-        var json = encode`(1 test 'a''a' true false null)`;
+        var json = encode`(1 test 'a\\'a' true false null)`;
 
         return it.eq(json, [1, 'test', `a'a`, true, false, null]);
     });

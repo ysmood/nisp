@@ -9,9 +9,8 @@
  *     # comment
  *     (bar 'test')
  *
- *     # escape "We'll", double each single quote
- *     # doesn't support escape with slash such as '\n', '\x', etc
- *     'We''ll'
+ *     # same with json string, except single quot is used
+ *     'We\nll'
  *
  *     # json data type: number, string, true, false, null
  *     (1 test true false null)
@@ -31,8 +30,8 @@ val
     / 'null'  { return null }
     / $number { return parseFloat(text()) }
     / '@'     { return options.data() }
-    / $name+
-    / quote chars:escaped_char* quote { return chars.join('') }
+    / $name
+    / string
 
 
 nisp
@@ -43,14 +42,40 @@ sep_val 'value'
     = _ v:val { return v }
 
 name 'name'
-	= [^' ()\r\n\t]
+	= [^' ()\r\n\t]+
 
-escaped_char
-    = "''" { return "'" }
-    / [^']
+string "string"
+  = quotation_mark chars:char* quotation_mark { return chars.join(""); }
 
-quote
-    = "'"
+char
+  = unescaped
+  / escape
+    sequence:(
+        '\''
+      / "\\"
+      / "/"
+      / "b" { return "\b"; }
+      / "f" { return "\f"; }
+      / "n" { return "\n"; }
+      / "r" { return "\r"; }
+      / "t" { return "\t"; }
+      / "u" digits:$(HEXDIG HEXDIG HEXDIG HEXDIG) {
+          return String.fromCharCode(parseInt(digits, 16));
+        }
+    )
+    { return sequence; }
+
+escape
+  = "\\"
+
+quotation_mark
+  = '\''
+
+unescaped
+  = [^\0-\x1F\x27\x5C]
+
+HEXDIG = [0-9a-f]i
+
 
 _ "whitespace"
     = ([ \t\r\n]+ / comment)*
