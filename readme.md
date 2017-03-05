@@ -16,8 +16,9 @@ You may ask what it really does? Yes, it does nothing. And that is exactly what 
 protocol needs. I use it to expose composable api.
 
 The ast of nisp is plain JSON, the js implementation is only around 50 lines of code,
-so it will be very to port nisp to other languages.
+so it will be very easy to port nisp to other languages.
 No closure or complex data type is required, even plain C can implement nisp easily.
+Such as the golang implementation: https://github.com/ysmood/gisp.
 
 Everything inside nisp is a function, it's very easy to keep everything type safe, plus the composable nature,
 nisp is an ideal middle layer to carry query or RPC.
