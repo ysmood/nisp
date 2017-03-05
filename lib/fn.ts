@@ -14,7 +14,7 @@ export default macro((ctx) => {
             closure[ast[1][i]] = arguments[i];
         }
 
-        return run(ast[2], closure, ctx.env, this);
+        return run(ast[2], closure, ctx.env, this, ctx.index);
     };
 })
 

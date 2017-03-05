@@ -1,4 +1,4 @@
-import run, { macro } from '../core'
+import { macro, arg } from '../core'
 
 let root = typeof window === 'object' ? window : global
 
@@ -7,16 +7,16 @@ export default (fn, customPromise?) => {
     var P = customPromise || root['Promise']; // eslint-disable-line
 
     return macro(ctx => {
-        let { ast, sandbox, env } = ctx
+        let { ast } = ctx
 
         let syncedArgs = []
         let p = ast.length > 1 ?
-            P.resolve(run(ast[1], sandbox, env, ctx))
+            P.resolve(arg(ctx, 1))
             : P.resolve()
 
         let f = (i) => v => {
             syncedArgs.push(v)
-            return run(ast[i], sandbox, env, ctx)
+            return arg(ctx, i)
         }
 
         for (let i = 2; i < ast.length; i++) {

@@ -26,6 +26,7 @@ export interface Context {
     sandbox: Sandbox
     env?: any
     parent?: Context
+    index?: number
 }
 
 function apply (fn: Fn, ctx: Context) {
@@ -35,15 +36,23 @@ function apply (fn: Fn, ctx: Context) {
     let args = [], len = ctx.ast.length;
 
     for (let i = 1; i < len; i++) {
-        args[i - 1] = nisp({
-            ast: ctx.ast[i],
-            sandbox: ctx.sandbox,
-            env: ctx.env,
-            parent: ctx
-        });
+        args[i - 1] = arg(ctx, i)
     }
 
     return fn.apply(ctx, args);
+}
+
+/**
+ * Get nth argument value
+ */
+export function arg (ctx: Context, index: number): any {
+    return nisp({
+        ast: ctx.ast[index],
+        sandbox: ctx.sandbox,
+        env: ctx.env,
+        parent: ctx,
+        index: index,
+    })
 }
 
 /**
@@ -55,6 +64,8 @@ export let error = function (ctx: Context, msg: string, err: any = Error) {
 
     while(node) {
         stack.push(node.ast[0])
+        if (node.index !== undefined)
+            stack.push(node.index)
         node = node.parent
     }
 
@@ -72,13 +83,7 @@ function nisp (ctx: Context) {
     if (!sandbox) error(ctx, "sandbox is required", TypeError);
 
     if (isArray(ast)) {
-        let action = ast[0]
-
-        action = nisp({
-            ast: action,
-            sandbox: sandbox,
-            env: ctx.env
-        })
+        let action = arg(ctx, 0)
 
         if (isFunction(action)) {
             return apply(action, ctx)
@@ -108,6 +113,6 @@ function nisp (ctx: Context) {
  * @param {any} env The system space of the vm.
  * @param {any} parent Parent context, it is used to back trace the execution stack.
  */
-export default function (ast: any, sandbox: Sandbox, env?, parent?: Context) {
-    return nisp({ ast, sandbox, env, parent })
+export default function (ast: any, sandbox: Sandbox, env?, parent?: Context, index?: number) {
+    return nisp({ ast, sandbox, env, parent, index })
 }

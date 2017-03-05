@@ -1,22 +1,6 @@
-import run, { macro } from '../core'
+import { macro, arg } from '../core'
 
 // ["if", <cond>, <exp1>, <exp2>]
 export default macro((ctx) => {
-    let { ast, sandbox, env } = ctx
-    return run(
-        ast[1],
-        sandbox,
-        env,
-        ctx
-    ) ? run(
-        ast[2],
-        sandbox,
-        env,
-        ctx
-    ) : run(
-        ast[3],
-        sandbox,
-        env,
-        ctx
-    )
+    return arg(ctx, 1) ? arg(ctx, 2) : arg(ctx, 3)
 });
