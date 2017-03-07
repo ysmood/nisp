@@ -83,6 +83,8 @@ function nisp (ctx: Context) {
     if (!sandbox) error(ctx, "sandbox is required", TypeError);
 
     if (isArray(ast)) {
+        if (ast.length === 0) return
+
         let action = arg(ctx, 0)
 
         if (isFunction(action)) {

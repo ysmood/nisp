@@ -38,6 +38,10 @@ export default function (it) {
         return it.eq(nisp(null, {}), null);
     });
 
+    it("empty", function () {
+        return it.eq(nisp([], {}), undefined);
+    });
+
     it("symbol undefined", function () {
         try {
             nisp([1, 2], {});
@@ -256,10 +260,11 @@ export default function (it) {
 
         var code = encode`(do
             (def a ${json})
-            (+ (get (a) 0) 2 ${Buffer.from("str")} 0)
+            (def b ())
+            (+ (get (a) 0) 2 ${Buffer.from("str")} 0 (b))
         )`;
 
-        return it.eq(nisp(code, sandbox), "3str0");
+        return it.eq(nisp(code, sandbox), "3str0undefined");
     });
 
     it("grammar data type", function () {

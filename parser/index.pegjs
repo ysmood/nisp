@@ -35,8 +35,12 @@ val
 
 
 nisp
-    = '(' _ head:val tail:sep_val* _ ')'
-    { tail.unshift(head); return tail }
+    = '(' _
+    values:(
+    	head:val tail:sep_val* { tail.unshift(head); return tail }
+    )?
+    _ ')' { return values === null ? [] : values }
+
 
 sep_val 'value'
     = _ v:val { return v }
