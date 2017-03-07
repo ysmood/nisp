@@ -1,6 +1,9 @@
-import { Context } from '../core'
+import { Context, error } from '../core'
 
 export default function (this: Context, name, val) {
-    if (name === '__proto__') return
+    // protect sandbox
+    if (name === '__proto__')
+        error(this, 'set __proto__ is not allowed')
+
     return this.sandbox[name] = val
 }

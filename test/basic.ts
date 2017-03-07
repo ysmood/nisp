@@ -47,7 +47,7 @@ export default function (it) {
             nisp([1, 2], {});
             throw new Error("should throw error");
         } catch (err) {
-            return it.eq(err.message, `[nisp] function "1" is undefined\nstack: [\n    1\n]`);
+            return it.eq(err.message, `nisp function "1" is undefined\nstack: [\n    1\n]`);
         }
     });
 
@@ -77,7 +77,7 @@ export default function (it) {
         try {
             nisp(["foo"], sandbox)
         } catch (err) {
-            return it.eq(err.message, "[nisp] err\nstack: [\n    \"foo\"\n]")
+            return it.eq(err.message, "nisp err\nstack: [\n    \"foo\"\n]")
         }
 
         throw new Error()
@@ -105,7 +105,10 @@ export default function (it) {
         try {
             nisp(ast, sandbox)
         } catch (err) {
-            return it.eq(err.message.indexOf('[nisp] function "foo" is undefined'), 0)
+            return it.eq(
+                err.message.indexOf('nisp function "foo" is undefined'),
+                0
+            )
         }
 
         throw Error('err')
@@ -177,6 +180,7 @@ export default function (it) {
         };
 
         var ast = ["do",
+            ["def", "a", 10],
             ["def", "c", 10],
             ["def", "foo",
                 ["@", ["a", "b"], ['do',
@@ -188,6 +192,32 @@ export default function (it) {
         ];
 
         return it.eq(nisp(ast, sandbox), 4);
+    });
+
+    it("custom fn call stack overflow", function () {
+        var sandbox = {
+            "do": $do,
+            def,
+            "@": fn
+        };
+
+        var ast = ["do",
+            ["def", "foo",
+                ["@", [], ["foo"]]
+            ],
+            ["foo"]
+        ];
+
+        try {
+            nisp(ast, sandbox)
+        } catch (err) {
+            return it.eq(
+                err.message.indexOf('nisp call stack overflow'),
+                0
+            );
+        }
+
+        throw new Error('should throw error')
     });
 
     it("anonymous fn", function () {

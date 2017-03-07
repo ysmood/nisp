@@ -70,7 +70,7 @@ export let error = function (ctx: Context, msg: string, err: any = Error) {
     }
 
     throw new err(
-        `[nisp] ${msg}\n`
+        `nisp ${msg}\n`
         + `stack: ` + JSON.stringify(stack, null, 4)
     )
 }
