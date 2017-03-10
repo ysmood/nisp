@@ -110,8 +110,8 @@ export default function (it) {
             nisp(ast, sandbox)
         } catch (err) {
             return it.eq(
-                err.nispStack,
-                [ 'foo', 2, '+', 2, '+', 0 ]
+                [err instanceof NispError, err.stack],
+                [true, [ 'foo', 2, '+', 2, '+', 0 ]]
             )
         }
 

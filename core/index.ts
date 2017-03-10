@@ -55,17 +55,18 @@ export function arg (ctx: Context, index: number): any {
     })
 }
 
-export class NispError extends Error {
-    nispStack: any[]
+export class NispError {
+    stack: any[]
+    message: string
 
     constructor (msg: string, stack: any[]) {
-        super(msg)
-        this.nispStack = stack
+        this.stack = stack
+        this.message = msg
+    }
 
-        this.toString = () => {
-            return `nisp ${this.message}\n` +
-                `stack: ` + JSON.stringify(this.nispStack, null, 4)
-        }
+    toString () {
+        return `nisp ${this.message}\n` +
+            `stack: ` + JSON.stringify(this.stack, null, 4)
     }
 }
 
