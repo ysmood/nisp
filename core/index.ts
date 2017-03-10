@@ -61,11 +61,11 @@ export class NispError extends Error {
     constructor (msg: string, stack: any[]) {
         super(msg)
         this.nispStack = stack
-    }
 
-    toString () {
-        return `nisp ${this.message}\n` +
-            `stack: ` + JSON.stringify(this.nispStack, null, 4)
+        this.toString = () => {
+            return `nisp ${this.message}\n` +
+                `stack: ` + JSON.stringify(this.nispStack, null, 4)
+        }
     }
 }
 

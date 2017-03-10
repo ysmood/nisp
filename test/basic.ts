@@ -78,7 +78,10 @@ export default function (it) {
             nisp(["foo"], sandbox)
         } catch (e) {
             let err = e as NispError
-            return it.eq([err.message, err.nispStack], ["err", [ 'foo', 0 ]])
+            return it.eq(
+                err + '',
+                `nisp err\nstack: [\n    \"foo\",\n    0\n]`
+            )
         }
 
         throw new Error()
