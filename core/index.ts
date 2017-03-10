@@ -55,32 +55,42 @@ export function arg (ctx: Context, index: number): any {
     })
 }
 
+export class NispError extends Error {
+    nispStack: any[]
+
+    constructor (msg: string, stack: any[]) {
+        super(msg)
+        this.nispStack = stack
+    }
+
+    toString () {
+        return `nisp ${this.message}\n` +
+            `stack: ` + JSON.stringify(this.nispStack, null, 4)
+    }
+}
+
 /**
  * Throw error with stack info
  */
-export let error = function (ctx: Context, msg: string, err: any = Error) {
+export let error = function (ctx: Context, msg: string) {
     let stack = []
     let node = ctx
+    let max = 100
 
-    while(node) {
-        stack.push(node.ast[0])
-        if (node.index !== undefined)
-            stack.push(node.index)
+    while(node && max-- > 0) {
+        stack.push(node.ast[0], node.index)
         node = node.parent
     }
 
-    throw new err(
-        `nisp ${msg}\n`
-        + `stack: ` + JSON.stringify(stack, null, 4)
-    )
+    throw new NispError(msg, stack)
 }
 
 function nisp (ctx: Context) {
-    if (!ctx) error(ctx, "ctx is required", TypeError);
+    if (!ctx) error(ctx, "ctx is required");
 
     let { sandbox, ast } = ctx
 
-    if (!sandbox) error(ctx, "sandbox is required", TypeError);
+    if (!sandbox) error(ctx, "sandbox is required");
 
     if (isArray(ast)) {
         if (ast.length === 0) return
@@ -95,7 +105,7 @@ function nisp (ctx: Context) {
             let fn = sandbox[action];
             return isFunction(fn) ? apply(fn, ctx) : fn;
         } else {
-            error(ctx, `function "${action}" is undefined`, TypeError);
+            error(ctx, `function "${action}" is undefined`);
         }
     } else {
         return ast;
@@ -115,6 +125,6 @@ function nisp (ctx: Context) {
  * @param {any} env The system space of the vm.
  * @param {any} parent Parent context, it is used to back trace the execution stack.
  */
-export default function (ast: any, sandbox: Sandbox, env?, parent?: Context, index?: number) {
+export default function (ast: any, sandbox: Sandbox, env?, parent?: Context, index = 0) {
     return nisp({ ast, sandbox, env, parent, index })
 }

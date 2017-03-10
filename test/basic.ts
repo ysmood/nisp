@@ -1,4 +1,4 @@
-import nisp, { Context, error } from "../core"
+import nisp, { Context, error, NispError } from "../core"
 import Promise from "yaku"
 import * as sleep from "yaku/lib/sleep"
 
@@ -47,7 +47,7 @@ export default function (it) {
             nisp([1, 2], {});
             throw new Error("should throw error");
         } catch (err) {
-            return it.eq(err.message, `nisp function "1" is undefined\nstack: [\n    1\n]`);
+            return it.eq(err.message, `function "1" is undefined`);
         }
     });
 
@@ -76,8 +76,9 @@ export default function (it) {
 
         try {
             nisp(["foo"], sandbox)
-        } catch (err) {
-            return it.eq(err.message, "nisp err\nstack: [\n    \"foo\"\n]")
+        } catch (e) {
+            let err = e as NispError
+            return it.eq([err.message, err.nispStack], ["err", [ 'foo', 0 ]])
         }
 
         throw new Error()
@@ -106,8 +107,8 @@ export default function (it) {
             nisp(ast, sandbox)
         } catch (err) {
             return it.eq(
-                err.message.indexOf('nisp function "foo" is undefined'),
-                0
+                err.nispStack,
+                [ 'foo', 2, '+', 2, '+', 0 ]
             )
         }
 
@@ -212,8 +213,8 @@ export default function (it) {
             nisp(ast, sandbox)
         } catch (err) {
             return it.eq(
-                err.message.indexOf('nisp call stack overflow'),
-                0
+                err.message,
+                'call stack overflow'
             );
         }
 
