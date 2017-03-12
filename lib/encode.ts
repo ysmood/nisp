@@ -9,7 +9,7 @@ let options = {
     }
 }
 
-export default function (literals: TemplateStringsArray, ...list): string {
+export default function (literals: TemplateStringsArray, ...list): any {
     var str = literals[0];
     for (var i = 1 ; i < literals.length ; ++ i) {
         str += '@' + literals[i]
