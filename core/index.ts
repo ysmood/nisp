@@ -65,7 +65,7 @@ export class NispError {
     }
 
     toString () {
-        return `nisp ${this.message}\n` +
+        return `nisp error: ${this.message}\n` +
             `stack: ` + JSON.stringify(this.stack, null, 4)
     }
 }
