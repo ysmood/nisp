@@ -8,7 +8,7 @@ export default function () {
     }
     for (var i = 0, j; i < args.length; i = ++j) {
         j = i + 1;
-        dict[args[i]] = args[j] || undefined;
+        dict[args[i]] = args[j];
     }
 
     return dict;
