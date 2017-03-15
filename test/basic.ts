@@ -164,6 +164,27 @@ export default function (it) {
         return it.eq(nisp(ast, sandbox), { a: 1, b: 2, c: 3 });
     });
 
+    it("dict odd", function () {
+        var sandbox = {
+            ":": dict,
+            "+": add
+        };
+
+        var ast = [":",
+            "a", 1,
+            "b", 2,
+            "c"
+        ];
+        try {
+            nisp(ast, sandbox)
+            
+        } catch (err) {
+            return it.eq(err.message, `the amount keys and values should be same`);
+        }
+
+        throw new Error();    
+    });
+
     it("custom if", function () {
         var sandbox = {
             "+": add,
