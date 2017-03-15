@@ -179,7 +179,7 @@ export default function (it) {
             nisp(ast, sandbox)
             
         } catch (err) {
-            return it.eq(err.message, `odd dict error`);
+            return it.eq(err.message, `the amount keys and values should be same`);
         }
 
         throw new Error();    
