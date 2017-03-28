@@ -1,7 +1,7 @@
 
 /*
  * Nisp Encode Grammar
- * It is a very simple data format to mate lisp and json together.
+ * It is a very simple data format, it mates lisp and json together.
  * It is designed to be fast and lightweight.
  * ==========================
  *
