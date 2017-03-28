@@ -1,8 +1,8 @@
 
 /*
  * Nisp Encode Grammar
- * It is a very limited data format to mis lisp and json.
- * It is designed to be fast and small.
+ * It is a very simple data format to mate lisp and json together.
+ * It is designed to be fast and lightweight.
  * ==========================
  *
  * (foo
