@@ -6,7 +6,7 @@ export interface Sandbox {
 
 export interface Fn {
     (...args)
-    macro?: typeof macro
+    macro?: boolean
 }
 
 export interface Nisp {
@@ -17,7 +17,7 @@ export interface Nisp {
 export function macro (fn: Nisp) {
     return Object.defineProperty(fn, 'macro', {
         configurable: false,
-        value: macro
+        value: true
     })
 }
 
@@ -30,7 +30,7 @@ export interface Context {
 }
 
 function apply (fn: Fn, ctx: Context) {
-    if (fn.macro === macro)
+    if (fn.macro)
         return fn(ctx)
 
     let args = [], len = ctx.ast.length;
