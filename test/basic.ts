@@ -13,6 +13,7 @@ import def from "../lib/def"
 import fn from "../lib/fn"
 import encode from '../lib/encode'
 import decode from '../lib/decode'
+import $switch from '../lib/switch'
 
 
 let add = function (...args) {
@@ -337,4 +338,37 @@ export default function (it) {
 
         throw new Error();
     });
+
+    it("switch case", function() {
+        var ast = ['do', ['def', 'id', 2 ], ['switch',['id'] ,['case', 1, 1 ], ['case', 2, 2 ], ['default', 3 ] ] ]
+        var sandbox = {
+            "switch": $switch,
+            do: $do,
+            def
+        }
+        return it.eq(nisp(ast, sandbox),2)
+    })
+   it("switch defautl", function() {
+        var ast = ['do', ['def', 'id', 1000 ], ['switch',['id'] ,['case', 1, 1 ], ['case', 2, 2 ], ['default', 'default' ] ] ]
+        var sandbox = {
+            "switch": $switch,
+            do: $do,
+            def
+        }
+        return it.eq(nisp(ast, sandbox),'default')
+    })   
+   it("switch error", function() {
+        var ast = ['do', ['def', 'id', 2 ], ['switch',['id'] ,['case', 1, 1 ], ['default', 3 ],['case', 2, 2 ] ] ]
+        var sandbox = {
+            "switch": $switch,
+            do: $do,
+            def
+        }
+        try {
+            nisp(ast, sandbox);
+        }catch(err) {
+            return it.eq(err.message,'please put the case in front of default')
+        }
+        
+    })     
 };
