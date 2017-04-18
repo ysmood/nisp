@@ -338,7 +338,6 @@ export default function (it) {
 
         throw new Error();
     });
-
     it("switch case", function() {
         var ast = encode`(do (def id 2) (switch (id) (case 1 1) (case 2 2) (default 3)))`
         var sandbox = {
