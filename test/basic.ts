@@ -14,6 +14,7 @@ import fn from "../lib/fn"
 import encode from '../lib/encode'
 import decode from '../lib/decode'
 import $switch from '../lib/switch'
+import format from '../lib/format'
 
 
 let add = function (...args) {
@@ -292,6 +293,33 @@ export default function (it) {
             ]
         }
         let ast = encode([decode(obj)] as any)
+
+        var sandbox = {
+            ':': dict,
+            '|': list
+        }
+
+        return it.eq(nisp(ast, sandbox), obj)
+    })
+
+    it('format', function () {
+        let obj = {
+            a: 10,
+            b: 20,
+            c: -3.101,
+            d: [1,
+                true,
+                'true',
+                false,
+                'false',
+                null,
+                'null',
+                `'\r\n"`,
+                2,
+                { s: 1 }
+            ]
+        }
+        let ast = encode([format(decode(obj))] as any)
 
         var sandbox = {
             ':': dict,
