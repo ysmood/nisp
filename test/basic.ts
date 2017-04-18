@@ -340,7 +340,7 @@ export default function (it) {
     });
 
     it("switch case", function() {
-        var ast = ['do', ['def', 'id', 2 ], ['switch',['id'] ,['case', 1, 1 ], ['case', 2, 2 ], ['default', 3 ] ] ]
+        var ast = encode`(do (def id 2) (switch (id) (case 1 1) (case 2 2) (default 3)))`
         var sandbox = {
             "switch": $switch,
             do: $do,
@@ -349,16 +349,16 @@ export default function (it) {
         return it.eq(nisp(ast, sandbox),2)
     })
    it("switch defautl", function() {
-        var ast = ['do', ['def', 'id', 1000 ], ['switch',['id'] ,['case', 1, 1 ], ['case', 2, 2 ], ['default', 'default' ] ] ]
+       var ast = encode`(do (def id 1000) (switch (id) (case 1 1) (case 2 2) (default 3)))`
         var sandbox = {
             "switch": $switch,
             do: $do,
             def
         }
-        return it.eq(nisp(ast, sandbox),'default')
+        return it.eq(nisp(ast, sandbox),3)
     })   
    it("switch error", function() {
-        var ast = ['do', ['def', 'id', 2 ], ['switch',['id'] ,['case', 1, 1 ], ['default', 3 ],['case', 2, 2 ] ] ]
+        var ast = encode`(do (def id 2) (switch (id) (case 1 1) (deafult 3) (case 2 2)))`
         var sandbox = {
             "switch": $switch,
             do: $do,
