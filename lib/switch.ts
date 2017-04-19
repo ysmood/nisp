@@ -1,47 +1,38 @@
-import nisp, { error, macro, arg } from '../core'
+import nisp, { error, macro } from '../core'
 
-// ["if", <cond>, <exp1>, <exp2>]
 export default macro((ctx) => {
-    let { sandbox, ast } = ctx,
-        len = ctx.ast.length,
-        value = arg(ctx, 1);
-
-    let obj = {
-        hit: false,
-        value: undefined
+    let { sandbox, ast, env, index } = ctx
+    ast = ast.slice(1)
+    if (!ast.length) {
+        return
     }
-
-    const $case = (val, exp) => {
-        const _val = nisp(val, Object.create(sandbox), ctx.env, ctx, ctx.index);
-        if (value === _val) {
-            obj.hit = true;
-            obj.value = nisp(exp, Object.create(sandbox), ctx.env, ctx, ctx.index);
-        }
-        return obj;
+    let defaultNode
+    if (ast[ast.length - 1][0] === 'default') {
+        defaultNode = ast[ast.length - 1]
+        ast = ast.slice(0, -1)
     }
-
-    const $default = (val) => {
-        if (!obj.hit) {
-            obj.hit = true;
-            obj.value = nisp(val, Object.create(ctx.sandbox), ctx.env, ctx, ctx.index);
-        }
-        return obj;
+    if (!ast.length) {
+        return nisp(defaultNode[1], sandbox, env, ctx, index)
     }
-
-    for (let i = 2; i < len; i++) {
-        const action = ast[i][0];
-        if (action === 'default' && i !== len - 1) {
-            error(ctx, 'please put the case in front of default');
+    let expressionValue
+    let hasExpression = false
+    if (ast[0][0] !== 'case') {
+        expressionValue = nisp(ast[0], sandbox, env, ctx, index)
+        hasExpression = true
+        ast = ast.slice(1)
+    }
+    for (let node of ast) {
+        if (node[0] !== 'case') {
+            error(ctx, 'switch unexpected identifier')
+            return
         }
-        if (action === 'case') {
-            obj = $case(ast[i][1], ast[i][2]);
-        } else if (action === 'default') {
-            obj = $default(ast[i][1]);
-        }
-
-        if (obj.hit) {
-            return obj.value;
+        const value = nisp(node[1], sandbox, env, ctx, index)
+        if (hasExpression && (expressionValue === value) || !hasExpression && value) {
+            return nisp(node[2], sandbox, env, ctx, index)
         }
     }
-
+    if (defaultNode) {
+        return nisp(defaultNode[1], sandbox, env, ctx, index)
+    }
+        
 });

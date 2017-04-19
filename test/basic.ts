@@ -366,9 +366,33 @@ export default function (it) {
 
         throw new Error();
     });
-
-    it("switch case", function() {
-        var ast = encode`(do (def id 2) (switch (id) (case 1 1) (case 2 2) (default 3)))`
+    it('switch case val', function() {
+        var ast = encode`(do
+            (def id false)
+            (def id2 true)
+            (switch
+                (case (id) 1)
+                (case (id2) 2)
+                (default 3)
+            )
+        )`
+        var sandbox = {
+            'switch': $switch,
+            do: $do,
+            def
+        }
+        return it.eq(nisp(ast, sandbox), 2)
+    });
+    it("switch val case", function() {
+        var ast = encode`(do 
+            (def id 2) 
+            (switch 
+                (id) 
+                (case 1 1) 
+                (case 2 2) 
+                (default 3)
+            )
+        )`
         var sandbox = {
             "switch": $switch,
             do: $do,
@@ -376,8 +400,16 @@ export default function (it) {
         }
         return it.eq(nisp(ast, sandbox),2)
     })
-   it("switch defautl", function() {
-       var ast = encode`(do (def id 1000) (switch (id) (case 1 1) (case 2 2) (default 3)))`
+   it("switch val defautl", function() {
+       var ast = encode`(do 
+            (def id 1000) 
+            (switch 
+                (id) 
+                (case 1 1) 
+                (case 2 2) 
+                (default 3)
+            )
+       )`
         var sandbox = {
             "switch": $switch,
             do: $do,
@@ -385,8 +417,16 @@ export default function (it) {
         }
         return it.eq(nisp(ast, sandbox),3)
     })   
-   it("switch error", function() {
-        var ast = encode`(do (def id 2) (switch (id) (case 1 1) (deafult 3) (case 2 2)))`
+   it("switch val error", function() {
+        var ast = encode`(do 
+            (def id 2) 
+            (switch 
+                (id) 
+                (case 1 1) 
+                (deafult 3) 
+                (case 2 2)
+            )
+        )`
         var sandbox = {
             "switch": $switch,
             do: $do,
@@ -395,8 +435,8 @@ export default function (it) {
         try {
             nisp(ast, sandbox);
         }catch(err) {
-            return it.eq(err.message,'please put the case in front of default')
+            return it.eq(err.message,'switch unexpected identifier')
         }
         
-    })     
+    })
 };
