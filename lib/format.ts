@@ -2,30 +2,16 @@ import { parse } from '../parser/extended'
 
 const fill = (input, length, space = 4) => {
     return new Array(length * space + 1).join(' ') + input
-    // let ret = []
-    // for (let i = 0; i < length * space; ++ i) {
-    //     ret.push(i + 1)
-    // }
-    // return '[' + ret.join('') + ']' + input;
 }
 
-const mapFill = (inputs, indent, left?, right?) => {
+const comments = (nodes) => {
     let ret = []
-    for (let item of inputs) {
-        return (left || '') + fill(item, indent) + (right || '')
-    }
-    return ret.join('')
-};
-
-const comments = (nodes, context) => {
     if (!nodes) {
-        return []
+        return ret
     }
-    let ret = []
     for (let item of nodes) {
-        let value = table.router(item, context)
-        if (value) {
-            ret.push(table.router(item, context))
+        if (item.type === Type.comment) {
+            ret.push(item)
         }
     }
     return ret
@@ -79,45 +65,37 @@ const table: Table = {
         return node.value
     },
     [Type.package] : (node, context) => {
-        let left = comments(node.left, context)
-        let right = comments(node.right, context)
-        let value = table.router(node.value, context)
         let ret = []
-        if (left.length) {
-            ret.push(left.shift())
-            ret = ret.concat(mapFill(left, context.indent, '\n'))
-            ret.push('\n')
-            value = fill(value, context.indent)
+        let list = comments(node.left)
+        list.push(node.value)
+        list = list.concat(comments(node.right))
+        ret.push(table.router(list.shift(), context), '\n')
+        for (let item of list) {
+            ret.push(fill(table.router(item, context), context.indent), '\n')
         }
-        ret.push(value)
-        if (right.length) {
-            ret = ret.concat(mapFill(right, context.indent, '\n'))
-        }
+        ret.pop()
         return ret.join('')
     },
     [Type.nisp] : (node, context) => {
         let ret = []
-        let left = comments(node.left, context)
-        let right = comments(node.right, context)
+        let list = comments(node.left)
+        list = list.concat(node.value)
+        list = list.concat(comments(node.right))
         ret.push('(')
         ++ context.indent
-        if (left.length) {
-            ret = ret.concat(mapFill(left, context.indent, '\n'))
-            ret.push('\n')
-        } else {
-            ret.push(table.router(node.value.shift(), context))
-            if (node.value.length) {
-                ret.push('\n')
-            }
+        let top = list[0]
+        if (top.type !== Type.nisp && top.type !== Type.comment) {
+            ret.push(table.router(top, context))
+            list.shift()
         }
-        for (let item of node.value) {
+        if (list.length) {
+            ret.push('\n')
+        }
+        for (let item of list) {
             ret.push(fill(table.router(item, context), context.indent), '\n')
         }
-        if (right.length) {
-            ret = ret.concat(mapFill(right, context.indent, '', '\n'))
-        }
         -- context.indent
-        if (node.value.length || left.length) {
+        if (list.length) {
             ret.push(fill(')', context.indent))
         } else {
             ret.push(')')
