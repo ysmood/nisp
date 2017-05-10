@@ -20,8 +20,8 @@ so it will be very easy to port nisp to other languages.
 No closure or complex data type is required, even plain C can implement nisp easily.
 Such as the golang implementation: https://github.com/ysmood/gisp.
 
-Everything inside nisp is a function, it's very easy to keep everything type safe, plus the composable nature,
-nisp is an ideal middle layer to carry query or RPC.
+Everything inside nisp is just function, so it's very easy to keep everything type safe, and with the composable nature,
+nisp is an ideal middle layer to carry query or RPC. Such as the Websocket RPC lib based on nisp: https://github.com/ysmood/nisper.
 
 # Quick Start
 
@@ -32,7 +32,7 @@ Try it online: https://runkit.com/ysmood/nisp-demo
 
 ### Define your own function
 
-Here the user can only use it as a sum-only-calculator.
+For a simple example, here you can use it as a sum-only-calculator.
 
 ```js
 import nisp from 'nisp'
@@ -50,7 +50,7 @@ nisp(exp, sandbox); // => 3
 ### Encode and escape data
 
 Sometimes you may want to separate nisp code and raw data,
-Here we provide `encode` function to simplify the pain of typing
+Here we provide `encode` function to reduce the pain of typing
 quotes and commas. The grammar is a subset of lisp.
 
 ```js
@@ -72,7 +72,16 @@ nisp(exp, sandbox); // => 9
 ```
 
 
-### Composable RPC
+### Composable RPC and safe by design
+
+Commonly used RPC libs such as json-rpc, thrift and GRPC can
+only handle function per call, if you want to handle large
+amount of data with two procedures, you have to load all of them
+on each procedure, that is a big waste. With nisp, you can
+seamlessly compose multiple functions into one remote call.
+
+We even used nisp to create a simple db query language, and it
+automatically helps us defense insertion attach by its nature.
 
 ```js
 import nisp, { error } from 'nisp'
