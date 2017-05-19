@@ -82,7 +82,7 @@ export default function (it) {
             let err = e as NispError
             return it.eq(
                 err + '',
-                `nisp error: err\nstack: [\n    \"foo\",\n    0\n]`
+                `NispError: err\nstack: [\n    \"foo\",\n    0\n]`
             )
         }
 

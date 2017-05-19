@@ -56,16 +56,18 @@ export function arg (ctx: Context, index: number): any {
 }
 
 export class NispError {
+    name: string
     stack: any[]
     message: string
 
     constructor (msg: string, stack: any[]) {
+        this.name = 'NispError'
         this.stack = stack
         this.message = msg
     }
 
     toString () {
-        return `nisp error: ${this.message}\n` +
+        return `NispError: ${this.message}\n` +
             `stack: ` + JSON.stringify(this.stack, null, 4)
     }
 }
