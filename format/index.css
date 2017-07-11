@@ -1,0 +1,48 @@
+.nisp-container {
+    font-size: 14px;
+    font-family: Menlo, monospace;
+    background-color: #fff;
+    line-height: 21px;
+    white-space: pre-wrap;
+}
+
+.nisp-container .nisp-range {
+    display: inline-block;
+}
+
+.nisp-container .nisp-line {
+    padding-left: 36px;
+}
+
+.nisp-container .nisp-identifier {
+    color: #37a0d6;
+}
+
+.nisp-container .nisp-string {
+    color: #37a0d6;
+}
+
+.nisp-container .nisp-number {
+    color: #d4a824;
+}
+
+.nisp-container .nisp-name {
+    color: #5d73d4;
+    font-weight: bold;
+}
+
+.nisp-container .nisp-null {
+    color: #8e3eef;
+}
+
+.nisp-container .nisp-boolean {
+    color: #8BC34A;
+}
+
+.nisp-container .nisp-symbol {
+    color: #aaa;
+}
+
+.nisp-container .nisp-comment {
+    color: #ccc;
+}
