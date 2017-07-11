@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.12.0",
+  "version": "0.13.2",
   "description": "A language that for easily build cross-language language",
   "main": "core/index",
   "scripts": {
@@ -11,7 +11,8 @@
   "files": [
     "core/**/*.{js,d.ts}",
     "lib/**/*.{js,d.ts}",
-    "parser/**/*.{js,d.ts}"
+    "parser/**/*.{js,d.ts}",
+    "highlight/**/*.{js,css,d.ts}"
   ],
   "repository": {
     "type": "git",
