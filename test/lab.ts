@@ -76,6 +76,7 @@ console.log(
                (concat (array) (item)) # 将item的队列合并到一个大的队列中
            )
            (| :)
+           ()
        )
    )
 )

@@ -135,16 +135,18 @@ const table: Table = {
         list = list.concat(node.value)
         list = list.concat(comments(node.right))
         ret.push(renderRange('(', style.symbol))
-        let top = list[0]
-        context.first = true
-        if (top.type === Type.value) {
-            ret.push(table.router(top, context))
-            list.shift()
-        }
-        for (const item of list) {
-            ret.push(renderLine(table.router(item, context)))
-            if (item.type === Type.nisp) {
-                context.first = false
+        if (list.length) {
+            let top = list[0]
+            context.first = true
+            if (top.type === Type.value) {
+                ret.push(table.router(top, context))
+                list.shift()
+            }
+            for (const item of list) {
+                ret.push(renderLine(table.router(item, context)))
+                if (item.type === Type.nisp) {
+                    context.first = false
+                }
             }
         }
         ret.push(renderRange(')', style.symbol))
