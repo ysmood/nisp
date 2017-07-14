@@ -82,19 +82,21 @@ const table: Table = {
         list = list.concat(node.value)
         list = list.concat(comments(node.right))
         ret.push('(')
-        ++ context.indent
-        let top = list[0]
-        if (top.type !== Type.nisp && top.type !== Type.comment) {
-            ret.push(table.router(top, context))
-            list.shift()
-        }
         if (list.length) {
-            ret.push('\n')
+            ++ context.indent
+            let top = list[0]
+            if (top.type !== Type.nisp && top.type !== Type.comment) {
+                ret.push(table.router(top, context))
+                list.shift()
+            }
+            if (list.length) {
+                ret.push('\n')
+            }
+            for (let item of list) {
+                ret.push(fill(table.router(item, context), context.indent), '\n')
+            }
+            -- context.indent
         }
-        for (let item of list) {
-            ret.push(fill(table.router(item, context), context.indent), '\n')
-        }
-        -- context.indent
         if (list.length) {
             ret.push(fill(')', context.indent))
         } else {
