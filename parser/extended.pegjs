@@ -104,10 +104,27 @@ HEXDIG = [0-9a-f]i
 
 _ "whitespace"
   = (
-    $([ \t\r\n]+) { return { type: types.blank, value: text() }; }
+    $(whiteSpace+) { return { type: types.blank, value: text() }; }
     /
     $comment { return { type: types.comment, value: text() }; }
   )*
+
+whiteSpace "whitespace"
+  = "\t"
+  / "\v"
+  / "\f"
+  / " "
+  / "\u00A0"
+  / "\uFEFF"
+  / zs
+  / "\n"
+  / "\r\n"
+  / "\r"
+  / "\u2028"
+  / "\u2029"
+
+// Separator, Space
+zs = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 
 comment
   = '#' [^\r\n]*

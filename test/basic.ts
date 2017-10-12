@@ -361,7 +361,7 @@ export default function (it) {
         try {
             encode`(+ (get 123 "a") 2`
         } catch (err) {
-            return it.eq(err.message, `Expected ")" or value but end of input found.`);
+            return it.eq(err.message, `Expected "#", ")", value, or whitespace but end of input found.`);
         }
 
         throw new Error();
