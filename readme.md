@@ -18,7 +18,6 @@ protocol needs. I use it to expose composable api.
 The ast of nisp is plain JSON, the js implementation is only around 50 lines of code,
 so it will be very easy to port nisp to other languages.
 No closure or complex data type is required, even plain C can implement nisp easily.
-Such as the golang implementation: https://github.com/ysmood/gisp.
 
 Everything inside nisp is just function, so it's very easy to keep everything type safe, and with the composable nature,
 nisp is an ideal middle layer to carry query or RPC. Such as the Websocket RPC lib based on nisp: https://github.com/ysmood/nisper.
@@ -28,6 +27,11 @@ nisp is an ideal middle layer to carry query or RPC. Such as the Websocket RPC l
 For more examples, read the unit test of this project.
 
 Try it online: https://runkit.com/ysmood/nisp-demo
+
+### Implementaions
+
+- Golang: https://github.com/ysmood/gisp
+- Ruby: https://github.com/ysmood/ruby-nisp
 
 
 ### Define your own function
