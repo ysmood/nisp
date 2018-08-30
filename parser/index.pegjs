@@ -77,7 +77,7 @@ quotation_mark
 
 unescaped
   = [^\0-\x09\x0b-\x0c\x0e-\x1F\x27\x5C]
-  / [\b\f\n\r\t]
+  / [\b\f\t]
 
 HEXDIG = [0-9a-f]i
 
