@@ -1,6 +1,6 @@
 {
   "name": "nisp",
-  "version": "0.13.5",
+  "version": "0.13.8",
   "description": "A language that for easily build cross-language language",
   "main": "core/index",
   "scripts": {
@@ -9,6 +9,8 @@
     "prepublish": "no build"
   },
   "files": [
+    "codemirror-mode/*.{js,d.ts}",
+    "codemirror-mode/tokenizer/*.{js,d.ts}",
     "core/**/*.{js,d.ts}",
     "lib/**/*.{js,d.ts}",
     "parser/**/*.{js,d.ts}",
@@ -29,7 +31,10 @@
   "homepage": "https://github.com/ysmood/nisp#readme",
   "devDependencies": {
     "@types/node": "7.0.5",
+    "codemirror": "5.48.0",
+    "fuzzaldrin": "^2.1.0",
     "junit": "1.4.9",
+    "lodash": "^4.17.11",
     "nokit": "0.23.22",
     "pegjs": "0.10.0",
     "typescript": "2.2.1",

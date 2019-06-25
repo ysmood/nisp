@@ -2,3 +2,5 @@ node_modules
 /**/*.js
 /**/*.d.ts
 *.log
+.cache
+dist/

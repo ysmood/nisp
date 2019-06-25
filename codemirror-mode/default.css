@@ -1,0 +1,36 @@
+.cm-s-nisp .cm-identifier {
+    color: #37a0d6;
+}
+
+.cm-s-nisp .cm-string {
+    color: #37a0d6;
+}
+
+.cm-s-nisp .cm-number {
+    color: #d4a824;
+}
+
+.cm-s-nisp .cm-name {
+    color: #5d73d4;
+    font-weight: bold;
+}
+
+.cm-s-nisp .cm-null {
+    color: #8e3eef;
+}
+
+.cm-s-nisp .cm-boolean {
+    color: #8BC34A;
+}
+
+.cm-s-nisp .cm-group {
+    color: #aaa;
+}
+
+.cm-s-nisp .cm-comment {
+    color: #aaa;
+}
+
+.cm-s-nisp .cm-error {
+    color: #d00;
+}
