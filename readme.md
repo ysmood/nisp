@@ -32,6 +32,7 @@ Try it online: https://runkit.com/ysmood/nisp-demo
 
 - Golang: https://github.com/ysmood/gisp
 - Ruby: https://github.com/ysmood/ruby-nisp
+- Java: https://github.com/kannangce/j-s-exp
 
 
 ### Define your own function
